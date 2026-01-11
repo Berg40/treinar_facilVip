@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora TMB & GET | Treino Fácil</title>
+    <!-- Ícones do Google (Material Icons) para visual moderno -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <link rel="stylesheet" href="tmb.css">
+    <link rel="shortcut icon" href="img/logo_treinoFacil.png" type="image/png">
+
+
+        <!-- Configuração PWA -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#10b981">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+    <!-- Script para registrar o PWA -->
+    <script>
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js')
+            .then(reg => console.log('App instalado/registrado com sucesso!', reg.scope))
+            .catch(err => console.log('Falha ao registrar App:', err));
+        });
+    }
+    </script>
+
+
+</head>
+<body>
+
+    <header>
+        <h1>
+            <span class="material-icons-round">calculate</span> 
+            Calculadora Fitness
+        </h1>
+    </header>
+
+    <div class="container-calculadora">
+        
+        <!-- Card de Entrada de Dados -->
+        <section class="dados">
+            
+            <!-- Seleção de Sexo (Estilo Botão) -->
+            <div class="form-group">
+                <label>Sexo:</label>
+                <div class="radio-group">
+                    <input type="radio" id="sexo_homem" name="sexo" value="Masculino">
+                    <label for="sexo_homem" class="radio-label">
+                        <span class="material-icons-round" style="vertical-align:middle">male</span> Homem
+                    </label>
+                    
+                    <input type="radio" id="sexo_mulher" name="sexo" value="Feminino">
+                    <label for="sexo_mulher" class="radio-label">
+                        <span class="material-icons-round" style="vertical-align:middle">female</span> Mulher
+                    </label>
+                </div>
+            </div>
+
+            <!-- Inputs Numéricos -->
+            <div class="form-group">
+                <label for="idade">Idade (anos):</label>
+                <input type="number" id="idade" placeholder="Ex: 30">
+            </div>
+            
+            <div class="form-group">
+                <label for="peso">Peso (kg):</label>
+                <input type="number" id="peso" placeholder="Ex: 75.5">
+            </div>
+            
+            <div class="form-group">
+                <label for="altura">Altura (cm):</label>
+                <input type="number" id="altura" placeholder="Ex: 175">
+            </div>
+
+            <!-- Select de Atividade -->
+            <div class="form-group">
+                <label for="nivel">Nível de Atividade Física:</label>
+                <select id="nivel">
+                    <option value="Sedentário (nenhum exercicío)">Sedentário (Escritório/Casa)</option>
+                    <option value="Levemente Ativo (1-2 dias na semana)">Leve (Caminhadas, 1-2x)</option>
+                    <option value="Moderadamente ativo (3-5 dias na semana)">Moderado (Treino 3-5x)</option>
+                    <option value="Muito ativo (6-7 dias na semana)">Intenso (Treino 6-7x)</option>
+                    <option value="Extremamente ativo">Atleta (2x por dia)</option>
+                </select>
+            </div>
+
+            <button class="btn" onclick="processar()">
+                <span class="material-icons-round">bolt</span> Calcular Agora
+            </button>
+        </section>
+
+        <!-- Área de Resultados (Preenchida pelo JS) -->
+        <div class="resultado-container">
+            
+            <!-- 1. Resumo do Perfil -->
+            <div class="resposta" id="resposta1">
+                <div class="item" id="dadosResp"><h2>Seu Perfil</h2></div>
+            </div>
+
+            <!-- 2. TMB (Basal) -->
+            <div class="resposta" id="get"></div>
+            <div class="resp2" id="tmbTexto1"></div> <!-- Texto Explicativo -->
+
+            <!-- 3. GET (Diário) - Destaque -->
+            <div class="resposta highlight" id="resposta2"></div>
+            <div class="resp2" id="getTexto1"></div>
+
+            <!-- 4. GSE (Semanal) -->
+            <div class="resposta3" id="gse"></div>
+            <div class="resp2" id="gseTexto1"></div>
+
+        </div>
+  
+        <!-- Seção Informativa (Benefícios) -->
+        <div class="infPai">
+            <div class="infFilho">
+                <img src="https://cdn-icons-png.flaticon.com/512/2964/2964514.png" alt="Balança">
+                <h3>Perder Peso</h3>
+                <p><small>Ajuste sua dieta para déficit calórico.</small></p>
+            </div>
+            <div class="infFilho">
+                <img src="https://cdn-icons-png.flaticon.com/512/2548/2548531.png" alt="Músculo">
+                <h3>Ganhar Massa</h3>
+                <p><small>Descubra o superávit ideal para crescer.</small></p>
+            </div>
+            <div class="infFilho">
+                <img src="https://cdn-icons-png.flaticon.com/512/3043/3043226.png" alt="Energia">
+                <h3>Performance</h3>
+                <p><small>Combustível certo para treinos pesados.</small></p>
+            </div>
+        </div>
+
+        <!-- Aviso Legal -->
+        <div class="importante">
+            <p><strong>⚠️ Importante:</strong> Estes valores são estimativas científicas. Para dietas específicas, consulte um nutricionista.</p>
+        </div>
+
+        <button class="btn btn-outline" onclick="voltar()">
+            <span class="material-icons-round">arrow_back</span> Voltar para Treinos
+        </button>
+
+    </div>
+
+    <footer>Copyright &copy; 2025 Berg Andrade</footer>
+
+    <script src="script_tmb.js"></script>
+</body>
+</html>

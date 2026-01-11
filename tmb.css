@@ -1,0 +1,325 @@
+:root {
+    --bg-body: #0f172a;       /* Fundo bem escuro */
+    --bg-card: #1e293b;       /* Card levemente mais claro */
+    --bg-input: #334155;      /* Input destacável */
+    
+    --primary: #10b981;       /* Verde Esmeralda (Ação/Sucesso) */
+    --primary-hover: #059669; 
+    --accent: #38bdf8;        /* Azul Claro (Detalhes) */
+    --danger: #ef4444;        /* Vermelho (Avisos/Destaque negativo) */
+    
+    --text-main: #f8fafc;     /* Branco Gelo */
+    --text-muted: #94a3b8;    /* Cinza Texto Secundário */
+    
+    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.15);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+body {
+    background-color: var(--bg-body);
+    color: var(--text-main);
+    line-height: 1.6;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* --- HEADER --- */
+header {
+    background: rgba(15, 23, 42, 0.9);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 20px;
+    text-align: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+header h1 {
+    font-size: 1.8rem;
+    background: linear-gradient(to right, var(--primary), var(--accent));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent; /* Texto com gradiente */
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.imgTitulo {
+    width: 32px;
+    height: 32px;
+    filter: drop-shadow(0 0 5px rgba(16, 185, 129, 0.5));
+}
+
+/* --- CONTAINER PRINCIPAL --- */
+.container-calculadora {
+    width: 100%;
+    max-width: 600px; /* Limita largura em telas grandes */
+    margin: 20px auto;
+    padding: 0 15px;
+    flex: 1;
+}
+
+/* --- CARD DE FORMULÁRIO --- */
+.dados {
+    background: var(--bg-card);
+    padding: 25px;
+    border-radius: 16px;
+    box-shadow: var(--shadow);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+label {
+    display: block;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+    font-weight: 500;
+}
+
+input[type="number"],
+select {
+    width: 100%;
+    background-color: var(--bg-input);
+    border: 1px solid transparent;
+    color: var(--text-main);
+    padding: 14px; /* Touch friendly */
+    border-radius: 8px;
+    font-size: 1rem;
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+input:focus,
+select:focus {
+    border-color: var(--accent);
+    background-color: #475569;
+    box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
+}
+
+/* Radio Buttons (Sexo) Customizados */
+.radio-group {
+    display: flex;
+    gap: 15px;
+    margin-top: 5px;
+}
+
+.radio-label {
+    flex: 1;
+    background: var(--bg-input);
+    padding: 12px;
+    border-radius: 8px;
+    text-align: center;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: all 0.2s;
+}
+
+.radio-label:hover {
+    background: #475569;
+}
+
+/* Esconde o input radio nativo */
+input[type="radio"] {
+    display: none; 
+}
+
+/* Estilo quando selecionado */
+input[type="radio"]:checked + .radio-label {
+    background: var(--accent); /* Azul se for masculino */
+    color: #0f172a;
+    font-weight: bold;
+}
+
+/* Se for feminino, rosa (opcional, aqui mantive azul pra padrão) */
+
+/* --- BOTÕES --- */
+.btn {
+    width: 100%;
+    background-color: var(--primary);
+    color: #0f172a;
+    font-weight: 700;
+    padding: 16px;
+    border: none;
+    border-radius: 10px;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-top: 20px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: transform 0.1s, background-color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.btn:hover {
+    background-color: var(--primary-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.btn:active {
+    transform: translateY(0);
+}
+
+.btn-outline {
+    background: transparent;
+    border: 2px solid var(--text-muted);
+    color: var(--text-muted);
+    margin-top: 15px;
+}
+
+.btn-outline:hover {
+    border-color: var(--text-main);
+    color: var(--text-main);
+    background: rgba(255,255,255,0.05);
+}
+
+/* --- RESULTADOS --- */
+.resultado-container {
+    margin-top: 30px;
+    display: grid;
+    gap: 15px;
+}
+
+/* Card Padrão de Resultado */
+.resposta, .resposta1, .resposta2, .resposta3 {
+    background: var(--bg-card);
+    padding: 20px;
+    border-radius: 12px;
+    text-align: center;
+    border-left: 4px solid var(--primary); /* Borda verde lateral */
+    animation: slideUp 0.4s ease-out;
+    display: none; /* Escondido inicialmente */
+}
+
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.result-box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    background: rgba(0,0,0,0.2);
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 10px;
+}
+
+.result-icon {
+    width: 40px;
+    height: 40px;
+}
+
+.result-value {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--primary);
+}
+
+.result-value small {
+    font-size: 1rem;
+    color: var(--text-muted);
+    font-weight: 400;
+}
+
+/* Destaque especial para o GET (Calorias totais) */
+.highlight .result-value {
+    color: var(--accent);
+}
+
+/* Texto explicativo dos resultados */
+.resp2 h2 {
+    color: var(--text-main);
+    font-size: 1.1rem;
+    margin-bottom: 5px;
+}
+.resp2 p {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+
+/* --- BLOCO INFORMATIVO --- */
+.infPai {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 15px;
+    margin: 30px 0;
+}
+
+.infFilho {
+    background: var(--bg-card);
+    padding: 20px;
+    border-radius: 12px;
+    text-align: center;
+    border: 1px solid rgba(255,255,255,0.05);
+}
+
+.infFilho img {
+    width: 40px;
+    margin-bottom: 10px;
+    filter: grayscale(100%); /* Ícones cinza */
+    transition: filter 0.3s;
+}
+
+.infFilho:hover img {
+    filter: grayscale(0%) drop-shadow(0 0 5px var(--accent)); /* Colorido ao passar mouse */
+}
+
+/* --- AVISO IMPORTANTE --- */
+.importante {
+    background: rgba(239, 68, 68, 0.1); /* Fundo vermelho bem suave */
+    border-left: 4px solid var(--danger);
+    color: #fca5a5;
+    padding: 15px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    margin-top: 30px;
+}
+
+footer {
+    text-align: center;
+    padding: 20px;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    border-top: 1px solid rgba(255,255,255,0.05);
+    margin-top: auto;
+}
+
+/* --- ANIMAÇÃO LOADING --- */
+.loading {
+    opacity: 0.7;
+    pointer-events: none;
+    position: relative;
+}
+.spin {
+    animation: spin 1s linear infinite;
+}
+@keyframes spin { 100% { transform: rotate(360deg); } }
+
+/* Responsividade */
+@media (max-width: 480px) {
+    header h1 { font-size: 1.5rem; }
+    .dados { padding: 20px 15px; }
+    .result-value { font-size: 1.8rem; }
+}

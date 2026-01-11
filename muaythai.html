@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mestre Muay Thai - TreinoFácil</title>
+    <link rel="shortcut icon" href="img/logo_treinoFacil.png" type="image/png">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+
+    <!-- PWA -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#10b981">
+
+    <style>
+        /* Estilos Exclusivos desta Página */
+        .thai-card {
+            background: linear-gradient(145deg, #1e293b, #0f172a);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        .mode-selector {
+            display: flex; gap: 10px; margin-bottom: 20px; justify-content: center;
+        }
+        
+        .mode-btn {
+            flex: 1; padding: 15px; border-radius: 12px; border: 2px solid #334155;
+            background: transparent; color: #94a3b8; cursor: pointer; transition: 0.3s;
+            display: flex; flex-direction: column; align-items: center; gap: 8px;
+        }
+        
+        .mode-btn.active {
+            border-color: var(--primary); background: rgba(16, 185, 129, 0.1);
+            color: #fff; transform: scale(1.02);
+        }
+
+        .combo-display {
+            display: none; text-align: center; animation: slideUp 0.4s ease;
+        }
+
+        .combo-title {
+            font-size: 1.8rem; color: var(--gold); margin: 10px 0; text-transform: uppercase; letter-spacing: 1px;
+        }
+
+        .step-list {
+            text-align: left; margin-top: 20px; background: rgba(0,0,0,0.2);
+            padding: 15px; border-radius: 10px; border-left: 4px solid var(--primary);
+        }
+
+        .step-item {
+            margin-bottom: 12px; display: flex; gap: 10px; align-items: flex-start;
+        }
+
+        .step-number {
+            background: var(--primary); color: #000; font-weight: bold;
+            width: 24px; height: 24px; border-radius: 50%; display: flex;
+            align-items: center; justify-content: center; font-size: 0.8rem; flex-shrink: 0;
+        }
+
+        .tag {
+            display: inline-block; padding: 4px 10px; border-radius: 20px;
+            font-size: 0.7rem; text-transform: uppercase; font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .tag-saco { background: #ef4444; color: #fff; }
+        .tag-dupla { background: #3b82f6; color: #fff; }
+
+        @keyframes slideUp { from {opacity:0; transform:translateY(20px);} to {opacity:1; transform:translateY(0);} }
+    </style>
+</head>
+<body>
+
+<header> 
+    <h1>🥊 Mestre Thai</h1>
+</header>
+  
+<main class="container">
+    
+    <div class="info1">Selecione o modo e gere seu combo de luta.</div>
+
+    <!-- Seletor de Modo -->
+    <div class="mode-selector">
+        <button class="mode-btn active" onclick="setMode('saco', this)">
+            <span class="material-icons-round">sports_mma</span>
+            Saco de Pancada
+        </button>
+        <button class="mode-btn" onclick="setMode('dupla', this)">
+            <span class="material-icons-round">people</span>
+            Treino em Dupla
+        </button>
+    </div>
+
+    <div class="card">
+        <div class="controls">
+            <label>Dificuldade:</label>
+            <select id="difficulty">
+                <option value="todos">🎲 Todos os Níveis</option>
+                <option value="iniciante">🟢 Iniciante (Básico)</option>
+                <option value="intermediario">🟡 Intermediário (Combos)</option>
+                <option value="avancado">🔴 Avançado (Técnico)</option>
+            </select>
+        </div>
+
+        <button class="btn1" id="btnGerar" onclick="gerarCombo()">
+            <span class="material-icons-round">flash_on</span> Gerar Sequência
+        </button>
+    </div>
+
+    <!-- Timer de Intervalo (Round Timer) -->
+<div class="thai-card" style="text-align: center; margin-top: 20px;">
+    <h2 style="color: var(--primary); display: flex; align-items: center; justify-content: center; gap: 10px;">
+        <span class="material-icons-round">timer</span> Cronômetro de Round
+    </h2>
+
+    <!-- Inputs de Configuração -->
+    <div style="display: flex; gap: 10px; justify-content: center; margin: 20px 0;">
+        <div style="flex: 1;">
+            <label style="font-size: 0.8rem; color: #ccc;">Round (min)</label>
+            <input type="number" id="roundTime" value="3" style="width: 100%; text-align: center; font-size: 1.2rem; background: #333; border: 1px solid #555; border-radius: 8px; padding: 10px; color: #fff;">
+        </div>
+        <div style="flex: 1;">
+            <label style="font-size: 0.8rem; color: #ccc;">Descanso (min)</label>
+            <input type="number" id="restTime" value="1" style="width: 100%; text-align: center; font-size: 1.2rem; background: #333; border: 1px solid #555; border-radius: 8px; padding: 10px; color: #fff;">
+        </div>
+    </div>
+
+    <!-- Mostrador Gigante -->
+    <div id="timerDisplay" style="font-size: 4.5rem; font-weight: bold; color: #fff; font-family: monospace; margin: 10px 0; transition: color 0.3s;">
+        03:00
+    </div>
+    <div id="statusLabel" style="color: var(--muted); font-size: 1rem; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 2px;">PREPARAR</div>
+
+            <!-- Botões do Timer -->
+    <div style="display: flex; gap: 10px; margin-top: 20px;">
+        <button id="btnStartTimer" onclick="toggleFightTimer()" style="flex: 2; padding: 15px; font-size: 1.2rem; font-weight: bold; background: var(--primary); color: #000; border: none; border-radius: 10px; cursor: pointer;">
+            INICIAR
+        </button>
+        
+        <button onclick="resetFightTimer()" style="flex: 1; padding: 15px; font-size: 1.2rem; font-weight: bold; background: #ef4444; color: #fff; border: none; border-radius: 10px; cursor: pointer;">
+            PARAR
+        </button>
+    </div>
+
+    </div>
+
+<!-- Som do Gongo (Reutilizando o mesmo arquivo) -->
+<audio id="fightGong" src="audio/gong-sound2.mp3" preload="auto"></audio>
+
+
+    <!-- Área de Resultado -->
+    <div id="resultado" class="thai-card combo-display">
+        <span id="tagTipo" class="tag"></span>
+        <h2 id="nomeCombo" class="combo-title"></h2>
+        
+        <div id="visualizacao" style="font-size: 1.2rem; margin: 15px 0; color: #fff;">
+            <!-- Ex: Jab + Direto + Chute -->
+        </div>
+
+        <div class="step-list" id="passoApasso">
+            <!-- Passos inseridos via JS -->
+        </div>
+
+        <div style="margin-top: 20px; color: var(--muted); font-size: 0.9rem;">
+            💡 <span id="dicaMestre"></span>
+        </div>
+    </div>
+
+    <button class="btn2" onclick="window.location.href='treino.html'" style="background: transparent; border: 1px solid #555;">
+        Voltar ao Menu
+    </button>
+
+    <footer>Copyright&copy; Berg Andrade 2025.</footer>
+
+</main>
+
+<script>
+    // =========================================
+    // 🧠 CÉREBRO TÉCNICO (Dicionário de Movimentos)
+    // =========================================
+    // O sistema consulta aqui para explicar qualquer golpe automaticamente
+    const DICIONARIO_TECNICO = {
+        "Jab": "Lance a mão da frente rápida e reta, protegendo o queixo com o ombro.",
+        "Direto": "Gire o quadril e o pé de trás, lançando a mão de trás com força.",
+        "Cruzado": "Cotovelo a 90 graus, gire o tronco e bata na lateral.",
+        "Gancho": "Bata de baixo para cima, buscando o queixo ou fígado.",
+        "Uppercut": "Flexione o joelho e exploda para cima com o soco.",
+        "Chute Low Kick": "Dê um passo diagonal, gire o quadril e bata com a canela na coxa.",
+        "Chute Médio (Costela)": "Gire todo o corpo, braço de bloqueio esticado, canela na costela.",
+        "Chute Alto (High Kick)": "Exige flexibilidade. Mire no pescoço/cabeça girando o pé de apoio.",
+        "Teep (Frontal)": "Levante o joelho e empurre com a sola do pé para afastar.",
+        "Joelhada Frontal": "Segure (clinch) imaginário, projete o quadril para frente e bata com o joelho.",
+        "Joelhada Voadora": "Salte trocando a base no ar e projete o joelho.",
+        "Cotovelada Horizontal": "Corte o ar na horizontal, acertando com a ponta do cotovelo.",
+        "Cotovelada Ascendente": "Passe o cotovelo entre a guarda do oponente, subindo.",
+        "Cotovelada Giratória": "Gire o corpo de costas e acerte o cotovelo cego.",
+        "Bloqueio (Check)": "Levante a perna com a canela virada para fora para defender o chute.",
+        "Esquiva": "Mova o tronco ou a cabeça para sair da trajetória do golpe.",
+        "Clinch": "Domine o pescoço do oponente com as duas mãos por dentro.",
+        "Switch (Troca Base)": "Troque a posição dos pés rapidamente para chutar com a perna da frente."
+    };
+
+    // =========================================
+    // 🥊 BANCO DE DADOS MASSIVO (As Sequências)
+    // =========================================
+    const DATABASE_COMBOS = [
+        
+        // ---------------------------------------------------------
+        // 🟢 SACO DE PANCADA - INICIANTE (Foco: Base e Linha Reta)
+        // ---------------------------------------------------------
+        { t: 'saco', n: 'iniciante', nome: "O Clássico", seq: ["Jab", "Direto", "Chute Low Kick"] },
+        { t: 'saco', n: 'iniciante', nome: "Abertura de Guarda", seq: ["Jab", "Jab", "Direto"] },
+        { t: 'saco', n: 'iniciante', nome: "Empurra e Chuta", seq: ["Teep (Frontal)", "Chute Médio (Costela)"] },
+        { t: 'saco', n: 'iniciante', nome: "Boxe Básico", seq: ["Jab", "Cruzado", "Chute Low Kick"] },
+        { t: 'saco', n: 'iniciante', nome: "Joelho Simples", seq: ["Jab", "Direto", "Joelhada Frontal"] },
+        { t: 'saco', n: 'iniciante', nome: "Blitz de Soco", seq: ["Jab", "Direto", "Cruzado", "Direto"] },
+        { t: 'saco', n: 'iniciante', nome: "Chute Duplo", seq: ["Chute Médio (Costela)", "Chute Médio (Costela)"] },
+        { t: 'saco', n: 'iniciante', nome: "Contra-Ataque Base", seq: ["Bloqueio (Check)", "Chute Médio (Costela)"] },
+        { t: 'saco', n: 'iniciante', nome: "Distância", seq: ["Teep (Frontal)", "Direto", "Teep (Frontal)"] },
+        { t: 'saco', n: 'iniciante', nome: "Cruzado Final", seq: ["Direto", "Cruzado", "Chute Low Kick"] },
+        { t: 'saco', n: 'iniciante', nome: "Uppercut Setup", seq: ["Jab", "Uppercut", "Cruzado"] },
+        { t: 'saco', n: 'iniciante', nome: "Corpo e Cabeça", seq: ["Jab", "Gancho", "Chute Low Kick"] },
+        { t: 'saco', n: 'iniciante', nome: "Simples e Eficaz", seq: ["Direto", "Chute Médio (Costela)"] },
+        { t: 'saco', n: 'iniciante', nome: "Avanço", seq: ["Jab", "Passo a frente", "Joelhada Frontal"] },
+        { t: 'saco', n: 'iniciante', nome: "Saída Lateral", seq: ["Jab", "Esquiva", "Chute Low Kick"] },
+
+        // ---------------------------------------------------------
+        // 🟡 SACO DE PANCADA - INTERMEDIÁRIO (Foco: Cotovelos e Cruzados)
+        // ---------------------------------------------------------
+        { t: 'saco', n: 'intermediario', nome: "Combo Holandês", seq: ["Gancho", "Cruzado", "Chute Low Kick"] },
+        { t: 'saco', n: 'intermediario', nome: "Navalha", seq: ["Direto", "Cotovelada Horizontal", "Joelhada Frontal"] },
+        { t: 'saco', n: 'intermediario', nome: "Troca Base", seq: ["Jab", "Switch (Troca Base)", "Chute Médio (Costela)"] },
+        { t: 'saco', n: 'intermediario', nome: "Falso Teep", seq: ["Teep (Frontal)", "Direto", "Cotovelada Ascendente"] },
+        { t: 'saco', n: 'intermediario', nome: "Quebra Costela", seq: ["Cruzado", "Chute Médio (Costela)", "Chute Médio (Costela)"] },
+        { t: 'saco', n: 'intermediario', nome: "Upper Mortal", seq: ["Jab", "Uppercut", "Cotovelada Horizontal"] },
+        { t: 'saco', n: 'intermediario', nome: "Clinch Fake", seq: ["Jab", "Mão esticada (fake)", "Cotovelada Cortante"] },
+        { t: 'saco', n: 'intermediario', nome: "Recuo e Ataque", seq: ["Teep (Frontal)", "Passo atrás", "Chute Alto (High Kick)"] },
+        { t: 'saco', n: 'intermediario', nome: "Linha de Cintura", seq: ["Jab", "Gancho no Fígado", "Chute Low Kick"] },
+        { t: 'saco', n: 'intermediario', nome: "Cotovelo Duplo", seq: ["Cotovelada Horizontal", "Cotovelada de Volta", "Joelhada"] },
+        
+        // ---------------------------------------------------------
+        // 🔴 SACO DE PANCADA - AVANÇADO (Foco: Giros e Fintas)
+        // ---------------------------------------------------------
+        { t: 'saco', n: 'avancado', nome: "O Tornado", seq: ["Jab", "Cotovelada Giratória", "Chute Alto (High Kick)"] },
+        { t: 'saco', n: 'avancado', nome: "Superman", seq: ["Finta de Chute", "Superman Punch (Direto saltando)", "Chute Low Kick"] },
+        { t: 'saco', n: 'avancado', nome: "Joelho Voador", seq: ["1-2 (Jab Direto)", "Segura Saco", "Joelhada Voadora"] },
+        { t: 'saco', n: 'avancado', nome: "Matador de Guarda", seq: ["Teep (Frontal)", "Finta Teep", "Cotovelada Ascendente", "Joelhada"] },
+        { t: 'saco', n: 'avancado', nome: "Saenchai Style", seq: ["Esquiva para trás", "Chute na perna de apoio (rasteira)", "Chute Alto"] },
+        { t: 'saco', n: 'avancado', nome: "Cotovelo Reverso", seq: ["Direto", "Esquiva lateral", "Cotovelada Giratória"] },
+        { t: 'saco', n: 'avancado', nome: "Combo 8 Armas", seq: ["Chute", "Soco", "Cotovelo", "Joelho"] },
+        { t: 'saco', n: 'avancado', nome: "Chute Giratório", seq: ["Jab", "Direto", "Chute Giratório"] },
+        { t: 'saco', n: 'avancado', nome: "Ataque Surpresa", seq: ["Finta de Jab", "Finta de Direto", "Chute Alto (High Kick)"] },
+        { t: 'saco', n: 'avancado', nome: "Flow State", seq: ["Movimente-se constantemente", "Misture golpes", "Mantenha a fluidez"] },
+
+        // ---------------------------------------------------------
+        // 🔵 DUPLA / SPARRING (Foco: Ação e Reação)
+        // ---------------------------------------------------------
+        { t: 'dupla', n: 'iniciante', nome: "Bate e Bloqueia", seq: ["A: Chute Low Kick", "B: Bloqueio (Check)", "B: Responde Chute"] },
+        { t: 'dupla', n: 'iniciante', nome: "1-2 e Esquiva", seq: ["A: Jab Direto", "B: Bloqueia e Esquiva", "B: Cruzado resposta"] },
+        { t: 'dupla', n: 'iniciante', nome: "Ping Pong de Chute", seq: ["A: Chute Costela", "B: Bloqueia e Chuta", "A: Bloqueia e Chuta"] },
+        { t: 'dupla', n: 'iniciante', nome: "Defesa de Teep", seq: ["A: Teep", "B: Desvia com a mão", "B: Entra com Direto"] },
+        { t: 'dupla', n: 'iniciante', nome: "Simples e Eficaz", seq: ["A: Jab", "A: Direto", "B: Bloqueia e Responde com Chute"] },
+        { t: 'dupla', n: 'iniciante', nome: "Clinch Básico", seq: ["A: Jab", "B: Entra em Clinch", "A: Joelhada Frontal"] },
+        { t: 'dupla', n: 'iniciante', nome: "Reação ao Gancho", seq: ["A: Gancho", "B: Bloqueia e Esquiva", "B: Responde com Cruzado"] },
+        { t: 'dupla', n: 'iniciante', nome: "Troca de Base Simples", seq: ["A: Jab", "B: Switch (Troca Base)", "B: Chute Low Kick"] },
+        { t: 'dupla', n: 'iniciante', nome: "Combo de Socos", seq: ["A: Jab", "A: Direto", "B: Bloqueia e Responde com Cruzado"] },
+        { t: 'dupla', n: 'iniciante', nome: "Joelhada no Clinch", seq: ["A: Jab", "B: Entra em Clinch", "A: Joelhada Frontal"] },
+        
+        { t: 'dupla', n: 'intermediario', nome: "Cruzado e Gancho", seq: ["A: Cruzado", "B: Bloqueia e Esquiva", "B: Gancho de Resposta"] },
+        { t: 'dupla', n: 'intermediario', nome: "Finta de Chute", seq: ["A: Finta de Chute", "B: Reage ao falso", "B: Direto ou Chute"] },
+        { t: 'dupla', n: 'intermediario', nome: "Clinch Básico", seq: ["Entrada em Clinch", "A: Joelhada Lateral", "B: Gira o parceiro"] },
+        { t: 'dupla', n: 'intermediario', nome: "Pega Chute", seq: ["A: Chute Médio", "B: Segura a perna", "B: Rasteira ou Soco"] },
+        { t: 'dupla', n: 'intermediario', nome: "Contra Cruzado", seq: ["A: Cruzado", "B: Bloqueio Alto", "B: Cotovelada ou Joelho"] },
+        { t: 'dupla', n: 'intermediario', nome: "Finta e Ataca", seq: ["A: Finta de Jab", "B: Reage ao falso", "A: Direto ou Chute"] },
+        { t: 'dupla', n: 'intermediario', nome: "Esquiva e Contra-Ataca", seq: ["A: Jab", "A: Direto", "B: Esquiva lateral", "B: Responde com Cruzado", "B: Chute na Perna"] },
+        { t: 'dupla', n: 'intermediario', nome: "Troca de Base em Dupla", seq: ["A: Jab", "B: Switch (Troca Base)", "B: Chute Médio"] },
+        { t: 'dupla', n: 'intermediario', nome: "Combo de Cotoveladas", seq: ["A: Jab", "Cotovelada Horizontal", "B: Bloqueia e Responde com Cotovelada Ascendente"] },
+        { t: 'dupla', n: 'intermediario', nome: "Joelhada no Clinch", seq: ["A: Entra em Clinch", "B: Joelhada Frontal", "A: Empurra e Sai"] },
+        { t: 'dupla', n: 'intermediario', nome: "Reação ao Teep", seq: ["A: Teep (Frontal)", "B: Desvia e Entra com Direto", "B: Chute Low Kick"] },
+
+        { t: 'dupla', n: 'avancado', nome: "Cruzado e Cotovelada", seq: ["A: Cruzado", "B: Bloqueia e Esquiva", "B: Cotovelada Giratória"] },
+        { t: 'dupla', n: 'avancado', nome: "Clinch Pro", seq: ["Clinch", "Desequilíbrio (Banda)", "Cotovelada na saída"] },
+        { t: 'dupla', n: 'avancado', nome: "Sparring Técnico", seq: ["Luta simulada", "Apenas 20% de força", "Foco na técnica"] },
+        { t: 'dupla', n: 'avancado', nome: "Varrida", seq: ["A: Chute Alto", "B: Esquiva abaixando", "B: Low Kick na base"] },
+        { t: 'dupla', n: 'avancado', nome: "Combo Avançado", seq: ["A: Jab", "A: Direto", "B: Bloqueio e Esquiva", "B: Cotovelada Giratória", "A: Chute Alto"] },
+        { t: 'dupla', n: 'avancado', nome: "Reação Rápida", seq: ["A: Ataque surpresa", "B: Reage em 1 segundo", "B: Contra-Ataca com tudo"] },
+        { t: 'dupla', n: 'avancado', nome: "Jogo de Pés", seq: ["Movimente-se constantemente", "Use fintas de pés", "Ataque em ângulos inesperados"] },
+        {}
+    ];
+
+    // =========================================
+    // ⚙️ LÓGICA DO PROGRAMA
+    // =========================================
+    let modoAtual = 'saco';
+
+    function setMode(modo, btn) {
+        modoAtual = modo;
+        document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+    }
+
+    function gerarCombo() {
+        const dificuldade = document.getElementById('difficulty').value;
+        const display = document.getElementById('resultado');
+        const listaPassos = document.getElementById('passoApasso');
+        
+        // 1. Filtra o Banco de Dados
+        let candidatos = DATABASE_COMBOS.filter(c => c.t === modoAtual);
+        
+        if (dificuldade !== 'todos') {
+            candidatos = candidatos.filter(c => c.n === dificuldade);
+        }
+
+        if (candidatos.length === 0) {
+            alert("Ops! Adicione mais combos neste nível.");
+            return;
+        }
+
+        // 2. Sorteia (Random)
+        const sorteado = candidatos[Math.floor(Math.random() * candidatos.length)];
+
+        // 3. Renderiza Título e Tags
+        document.getElementById('tagTipo').className = `tag tag-${sorteado.t}`;
+        document.getElementById('tagTipo').innerText = sorteado.t === 'saco' ? 'Saco de Pancada' : 'Treino em Dupla';
+        document.getElementById('nomeCombo').innerText = sorteado.nome;
+        
+        // 4. Renderiza Sequência Visual
+        document.getElementById('visualizacao').innerHTML = sorteado.seq.join(" <span style='color:var(--primary)'>➜</span> ");
+
+        // 5. GERAÇÃO AUTOMÁTICA DE PASSOS (O Segredo!)
+        // O sistema lê o golpe e busca a explicação no dicionário técnico
+        let htmlPassos = "";
+        
+        sorteado.seq.forEach((golpe, index) => {
+            // Tenta achar a explicação exata ou uma genérica
+            let explicacao = "Execute o movimento com técnica e velocidade.";
+            
+            // Busca inteligente no dicionário (Keywords)
+            for (const chave in DICIONARIO_TECNICO) {
+                if (golpe.includes(chave)) {
+                    explicacao = DICIONARIO_TECNICO[chave];
+                    break;
+                }
+            }
+
+            htmlPassos += `
+                <div class="step-item">
+                    <div class="step-number">${index + 1}</div>
+                    <div>
+                        <strong>${golpe}:</strong><br>
+                        <span style="font-size:0.9em; color:#ccc">${explicacao}</span>
+                    </div>
+                </div>
+            `;
+        });
+
+        listaPassos.innerHTML = htmlPassos;
+        
+        // Dica Aleatória
+        const dicas = [
+            "Mantenha a guarda alta o tempo todo!",
+            "Solte o ar ao bater (faça o som 'Shhh').",
+            "Gire o quadril para ganhar potência.",
+            "Não cruze as pernas ao caminhar.",
+            "Fique leve na ponta dos pés."
+        ];
+        document.getElementById('dicaMestre').innerText = dicas[Math.floor(Math.random() * dicas.length)];
+
+        // Animação
+        display.style.display = 'none';
+        setTimeout(() => {
+            display.style.display = 'block';
+            display.scrollIntoView({ behavior: 'smooth' });
+        }, 100);
+    }
+
+        // =========================================
+    // ⏱️ LÓGICA DO ROUND TIMER (LUTA/DESCANSO)
+
+    let fightInterval = null;
+    let fightSeconds = 0;
+    let isRunning = false;  
+    let currentMode = 'round'; // 'round' ou 'rest'
+
+    const display = document.getElementById('timerDisplay');
+    const statusLbl = document.getElementById('statusLabel');
+    const btnTimer = document.getElementById('btnStartTimer');
+    const gong = document.getElementById('fightGong');
+
+    function toggleFightTimer() {
+        if (isRunning) {
+            // Pausar
+            clearInterval(fightInterval);
+            isRunning = false;
+            btnTimer.innerText = "CONTINUAR";
+            btnTimer.style.background = "#fbbf24"; // Amarelo
+        } else {
+            // Iniciar / Continuar
+            if (fightSeconds <= 0) {
+                setupRound(); // Começa do zero se estiver zerado
+            }
+            startTick();
+            btnTimer.innerText = "PAUSAR";
+            btnTimer.style.background = "#38bdf8"; // Azul
+        }
+    }
+
+    function resetFightTimer() {
+        // Para tudo e zera
+        clearInterval(fightInterval);
+        isRunning = false;
+        fightSeconds = 0;
+        currentMode = 'round';
+
+        // Reseta visual
+        const rMin = parseInt(document.getElementById('roundTime').value) || 3;
+        display.innerText = `${rMin.toString().padStart(2,'0')}:00`;
+        
+        statusLbl.innerText = "PREPARAR";
+        statusLbl.style.color = "var(--muted)";
+        display.style.color = "#fff";
+        
+        btnTimer.innerText = "INICIAR";
+        btnTimer.style.background = "var(--primary)"; // Verde
+    }
+
+    function setupRound() {
+        const rMin = parseInt(document.getElementById('roundTime').value) || 3;
+        fightSeconds = rMin * 60;
+        currentMode = 'round';
+        updateVisuals('LUTAR!', '#10b981', '#fff'); // Verde
+        try { gong.play(); } catch(e){}
+    }
+
+    function setupRest() {
+        const rMin = parseInt(document.getElementById('restTime').value) || 1;
+        fightSeconds = rMin * 60;
+        currentMode = 'rest';
+        updateVisuals('DESCANSO', '#38bdf8', '#38bdf8'); // Azul
+        try { gong.play(); } catch(e){}
+    }
+
+    function startTick() {
+        isRunning = true;
+        fightInterval = setInterval(() => {
+            fightSeconds--;
+            updateDisplayFormatted();
+
+            if (fightSeconds < 0) {
+                clearInterval(fightInterval);
+                if (currentMode === 'round') {
+                    setupRest();
+                    startTick();
+                } else {
+                    setupRound();
+                    startTick();
+                }
+            }
+        }, 1000);
+    }
+
+    function updateDisplayFormatted() {
+        // Evita mostrar números negativos na transição
+        let sTotal = Math.max(0, fightSeconds);
+        let m = Math.floor(sTotal / 60);
+        let s = sTotal % 60;
+        display.innerText = `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+    }
+
+    function updateVisuals(text, colorLabel, colorTime) {
+        statusLbl.innerText = text;
+        statusLbl.style.color = colorLabel;
+        display.style.color = colorTime;
+    }
+
+
+        function setupRound() {
+            const rMin = parseInt(document.getElementById('roundTime').value) || 3;
+            fightSeconds = rMin * 60;
+            currentMode = 'round';
+            updateVisuals('LUTAR!', '#10b981', '#fff'); // Verde
+            gong.play();
+        }
+
+        function setupRest() {
+            const rMin = parseInt(document.getElementById('restTime').value) || 1;
+            fightSeconds = rMin * 60;
+            currentMode = 'rest';
+            updateVisuals('DESCANSO', '#38bdf8', '#38bdf8'); // Azul
+            gong.play();
+        }
+
+    function startTick() {
+        isRunning = true;
+        isFighting = true;
+        
+        fightInterval = setInterval(() => {
+            fightSeconds--;
+            updateDisplayFormatted();
+
+            if (fightSeconds <= 0) {
+                clearInterval(fightInterval);
+                if (currentMode === 'round') {
+                    setupRest(); // Acabou round, vai pra descanso
+                    startTick();
+                } else {
+                    setupRound(); // Acabou descanso, volta pro round
+                    startTick();
+                }
+            }
+        }, 1000);
+    }
+
+    function updateDisplayFormatted() {
+        let m = Math.floor(fightSeconds / 60);
+        let s = fightSeconds % 60;
+        display.innerText = `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+    }
+
+    function updateVisuals(text, colorLabel, colorTime) {
+        statusLbl.innerText = text;
+        statusLbl.style.color = colorLabel;
+        display.style.color = colorTime;
+    }
+
+
+</script>
+
+
+</body>
+</html>

@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IA Postural - TreinoFácil</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <link rel="shortcut icon" href="img/logo.png" type="image/png">
+
+    <!-- Carrega a Inteligência Artificial (TensorFlow.js) -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-core"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-converter"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-backend-webgl"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/pose-detection"></script>
+
+    <style>
+        .ia-container {
+            background: #1e293b; padding: 20px; border-radius: 16px; text-align: center;
+            margin-bottom: 20px; position: relative; overflow: hidden;
+        }
+        
+        #preview-container {
+            position: relative; margin: 20px auto; max-width: 100%;
+            border-radius: 10px; overflow: hidden; min-height: 300px; background: #000;
+            display: flex; justify-content: center; align-items: center;
+        }
+
+        canvas { position: absolute; top: 0; left: 0; }
+        img { max-width: 100%; display: block; }
+
+        .loading-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8); color: #10b981; display: flex;
+            flex-direction: column; justify-content: center; align-items: center;
+            z-index: 10; display: none;
+        }
+        
+        .result-box {
+            background: rgba(255,255,255,0.05); padding: 15px; border-radius: 10px;
+            text-align: left; margin-top: 20px; border-left: 4px solid #10b981;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>🤖 IA Postural</h1>
+</header>
+
+<main class="container">
+    <div class="info1">Tire uma foto de corpo inteiro e deixe a IA analisar sua simetria.</div>
+
+    <!-- Área de Upload -->
+    <div class="ia-container">
+        <div id="loading" class="loading-overlay">
+            <span class="material-icons-round" style="font-size: 40px; animation: spin 1s infinite linear;">autorenew</span>
+            <p>Carregando IA... (Isso pode demorar)</p>
+        </div>
+
+        <label for="fileUpload" class="btn1" style="display: block; margin: 0 auto; max-width: 200px; background: #3b82f6;">
+            <span class="material-icons-round">camera_alt</span> Tirar Foto / Upload
+        </label>
+        <input type="file" id="fileUpload" accept="image/*" style="display: none;" onchange="carregarImagem(event)">
+
+        <div id="preview-container">
+            <img id="imgTarget" src="" style="opacity: 0;">
+            anvas id="canvasOverlay"></canvas> 
+            <p id="placeholder-text" style="color: #666;">Nenhuma foto selecionada</p>
+        </div>
+
+        <button id="btnAnalisar" class="btn1" onclick="analisarPostura()" style="background: #10b981; display: none;">
+            🔍 Analisar Agora
+        </button>
+    </div>
+
+    <!-- Resultados -->
+    <div id="resultado" class="result-box">
+        <h3 style="color: #fff; margin-top: 0;">Diagnóstico da IA:</h3>
+        <ul id="lista-diagnostico" style="color: #cbd5e1; padding-left: 20px;"></ul>
+        
+        <div style="margin-top: 15px; font-size: 0.8rem; color: #64748b;">
+            * Esta é uma análise matemática baseada em pixels. Não substitui um médico.
+        </div>
+    </div>
+
+    <button class="btn2" onclick="window.location.href='treino.html'" style="background: transparent; border: 1px solid #555;">
+        Voltar
+    </button>
+
+</main>
+
+<script>
+    let detector;
+    let imageElement = document.getElementById('imgTarget');
+    let canvas = document.getElementById('canvasOverlay');
+    let ctx = canvas.getContext('2d');
+    let loading = document.getElementById('loading');
+
+    // 1. Inicializa o Modelo IA (MoveNet)
+    async function initAI() {
+        loading.style.display = 'flex';
+        loading.querySelector('p').innerText = "Carregando Cérebro IA...";
+        
+        try {
+            await tf.setBackend('webgl'); // Garante aceleração gráfica
+            const model = poseDetection.SupportedModels.MoveNet;
+            const detectorConfig = { modelType: poseDetection.movenet.modelType.SINGLEPOSE_LIGHTNING };
+            detector = await poseDetection.createDetector(model, detectorConfig);
+            
+            loading.style.display = 'none';
+            console.log("IA Carregada!");
+        } catch (error) {
+            console.error(error);
+            alert("Erro ao carregar IA. Tente usar um navegador moderno (Chrome/Edge).");
+            loading.style.display = 'none';
+        }
+    }
+    initAI();
+
+    // 2. Carrega a Foto do Usuário
+    function carregarImagem(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        loading.style.display = 'flex';
+        loading.querySelector('p').innerText = "Processando imagem...";
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const img = new Image();
+            img.src = e.target.result;
+
+            img.onload = () => {
+                imageElement.src = img.src;
+                imageElement.style.display = 'block';
+                imageElement.style.opacity = 1;
+                document.getElementById('placeholder-text').style.display = 'none';
+                
+                // Redimensiona o Canvas para bater com a imagem
+                canvas.width = imageElement.width;
+                canvas.height = imageElement.height;
+                
+                document.getElementById('btnAnalisar').style.display = 'block';
+                document.getElementById('resultado').style.display = 'none';
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                loading.style.display = 'none';
+            };
+        }
+        reader.readAsDataURL(file);
+    }
+
+    // 3. Analisa a Postura
+    async function analisarPostura() {
+        if (!detector) return alert("IA ainda carregando... aguarde.");
+
+        loading.style.display = 'flex';
+        loading.querySelector('p').innerText = "Analisando esqueleto...";
+
+        const poses = await detector.estimatePoses(imageElement);
+        loading.style.display = 'none';
+
+        if (poses.length > 0) {
+            const keypoints = poses[0].keypoints;
+            desenharEsqueleto(keypoints);
+            calcularDesvios(keypoints);
+        } else {
+            alert("Não consegui detectar uma pessoa na foto. Tente outra com iluminação melhor.");
+        }
+    }
+
+    // 4. Desenha Pontos
+    function desenharEsqueleto(keypoints) {
+        keypoints.forEach(point => {
+            if (point.score > 0.3) {
+                ctx.beginPath();
+                ctx.arc(point.x, point.y, 5, 0, 2 * Math.PI);
+                ctx.fillStyle = '#10b981';
+                ctx.fill();
+            }
+        });
+    }
+
+    // 5. Calcula Desvios
+    function calcularDesvios(points) {
+        const list = document.getElementById('lista-diagnostico');
+        list.innerHTML = "";
+        document.getElementById('resultado').style.display = 'block';
+
+        const ombroE = points.find(p => p.name === 'left_shoulder');
+        const ombroD = points.find(p => p.name === 'right_shoulder');
+        const orelhaE = points.find(p => p.name === 'left_ear');
+        const orelhaD = points.find(p => p.name === 'right_ear');
+
+        let problemas = 0;
+
+        // Ombros
+        if (ombroE && ombroD && ombroE.score > 0.4 && ombroD.score > 0.4) {
+            const diffY = Math.abs(ombroE.y - ombroD.y);
+            if (diffY > 15) {
+                const ladoAlto = ombroE.y < ombroD.y ? "Esquerdo" : "Direito";
+                addDiag(`⚠️ <strong>Ombros Assimétricos:</strong> Ombro ${ladoAlto} mais alto.`);
+                problemas++;
+            } else {
+                addDiag(`✅ Ombros nivelados.`);
+            }
+        }
+
+        // Cabeça
+        if (orelhaE && orelhaD && orelhaE.score > 0.4 && orelhaD.score > 0.4) {
+             const diffHead = Math.abs(orelhaE.y - orelhaD.y);
+             if (diffHead > 10) {
+                 addDiag(`⚠️ <strong>Cabeça Inclinada:</strong> Atenção ao pescoço.`);
+                 problemas++;
+             }
+        }
+        
+        if(problemas === 0) addDiag("🌟 <strong>Parabéns!</strong> Simetria frontal excelente.");
+        
+        // Rola a tela para o resultado
+        document.getElementById('resultado').scrollIntoView({behavior: 'smooth'});
+    }
+
+    function addDiag(html) {
+        const li = document.createElement('li');
+        li.innerHTML = html;
+        li.style.marginBottom = "10px";
+        document.getElementById('lista-diagnostico').appendChild(li);
+    }
+</script>
+
+<style>
+    @keyframes spin { 100% { transform: rotate(360deg); } }
+</style>
+
+</body>
+</html>

@@ -1,0 +1,21 @@
+{
+  "name": "TreinoFácil Pro",
+  "short_name": "TreinoFácil",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#10b981",
+  "description": "Seu personal trainer e nutricionista de bolso.",
+  "icons": [
+    {
+      "src": "img/logo_treinoFacil.png", 
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "img/logo_treinoFacil.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

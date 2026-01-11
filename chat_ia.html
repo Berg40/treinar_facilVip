@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Chat TreinoFácil IA</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#ff4500">
+    <script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js');</script>
+</head>
+<body class="min-h-[100dvh] bg-gradient-to-br from-orange-500 via-red-600 to-black text-white font-sans">
+    <!-- Header -->
+    <header class="bg-black/90 backdrop-blur-md sticky top-0 z-50 shadow-2xl px-4 py-3 sm:py-4">
+        <div class="max-w-md mx-auto flex items-center justify-between">
+            <div class="flex items-center space-x-3 flex-shrink-0">
+                <div class="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-xl shadow-lg flex items-center justify-center">
+                    <i class="fas fa-fist-raised text-xl sm:text-2xl"></i>
+                </div>
+                <div class="min-w-0">
+                    <h1 class="text-xl sm:text-2xl font-bold bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent truncate">Treino IA</h1>
+                    <p class="text-xs opacity-75 hidden sm:block">TreinoFácil (VIP)</p>
+                </div>
+            </div>
+            <div id="status">
+
+            </div> <button onclick="voltar()" style="background: #ef4444; width: auto; padding: 5px 10px; margin-left: 5px; border-radius: 8px; border: none; color: white; font-weight: 600; cursor: pointer;">Voltar para Treinos</button></div>
+        </div>
+    </header>
+
+    <main class="max-w-md mx-auto px-4 sm:px-6 pb-20 sm:pb-8 w-full flex-1 flex flex-col min-h-[calc(100dvh-80px)]">
+        <!-- Chat Container -->
+        <div id="chat-container" class="flex-1 flex flex-col w-full">
+            <div id="chat" class="flex-1 bg-black/30 backdrop-blur-2xl rounded-2xl sm:rounded-3xl border-2 sm:border-4 border-white/20 shadow-3xl overflow-hidden flex flex-col min-h-0">
+                <div id="messages" class="flex-1 overflow-y-auto p-4 sm:p-8 space-y-3 sm:space-y-4 scrollbar-thin scrollbar-thumb-orange-500/80 scrollbar-track-black/50 pr-2">
+                    <div class="p-4 bg-orange-500/20 rounded-2xl text-center mx-auto max-w-md">
+                        <i class="fas fa-fist-raised text-2xl mb-2 block text-yellow-400"></i>
+                        <div class="font-bold text-lg mb-1">Dra Luiza Ferraz IA</div>
+                        <div>Olá! Pergunte algo sobre Treinos, dietas, hormônios anabolizantes etc.... 💪</div>
+                    </div>
+                </div>
+                <div id="typing" class="hidden px-4 sm:px-8 py-3 bg-white/10 border-t border-white/20">
+                    <div class="flex items-center space-x-2">
+                        <div class="w-2.5 h-2.5 sm:w-3 sm:h-3 bg-orange-400 rounded-full animate-bounce"></div>
+                        <div class="w-2.5 h-2.5 sm:w-3 sm:h-3 bg-orange-400 rounded-full animate-bounce" style="animation-delay: 0.1s;"></div>
+                        <div class="w-2.5 h-2.5 sm:w-3 sm:h-3 bg-orange-400 rounded-full animate-bounce" style="animation-delay: 0.2s;"></div>
+                        <span class="text-orange-200 text-sm sm:text-base">Dra Luiza digitando...</span>
+                    </div>
+                </div>
+            </div>
+            <div class="flex gap-2 sm:gap-3 mt-4 sm:mt-8 pt-2 sticky bottom-4 bg-black/50 backdrop-blur-md rounded-2xl p-2">
+                <input type="text" id="input" placeholder="Ex: Como ganhar massa muscular ?..." 
+                       class="flex-1 px-4 py-3 sm:py-5 bg-white/20 border-2 border-white/30 rounded-2xl sm:rounded-3xl backdrop-blur-xl focus:outline-none focus:border-orange-500 focus:ring-2 sm:focus:ring-4 focus:ring-orange-500/30 text-lg sm:text-xl placeholder-white/70 font-medium resize-none max-h-20 overflow-y-auto">
+                <button onclick="ask()" class="w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 rounded-2xl sm:rounded-3xl shadow-2xl hover:shadow-3xl transition-all duration-300 flex items-center justify-center text-xl sm:text-2xl hover:scale-105 flex-shrink-0">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // === CONFIGURAÇÃO DEEPSEEK ===
+        // 1. Vá em https://platform.deepseek.com/api_keys
+        // 2. Crie "Create new API key" 
+        // 3. COLE AQUI: (formato sk-... longa)
+        const API_KEY = 'sk-f4e543d49b3e40c89bcdd6200f0cbada';  
+        const API_URL = 'https://api.deepseek.com/v1/chat/completions';
+        
+        // Elementos DOM
+        const statusEl = document.getElementById('status');
+        const messagesEl = document.getElementById('messages');
+        const typingEl = document.getElementById('typing');
+        const inputEl = document.getElementById('input');
+
+        // Debug key
+        console.log('🔑 DeepSeek Key:', API_KEY ? API_KEY.slice(0,10)+'...' : '❌ NENHUMA');
+
+        
+
+        // Adiciona mensagem
+        function addMessage(sender, text, isUser = false) {
+            const div = document.createElement('div');
+            div.className = `p-4 rounded-2xl shadow-lg ${isUser ? 'bg-orange-500/30 ml-auto max-w-[85%]' : 'bg-white/10 mr-auto max-w-[85%]'}`;
+            div.innerHTML = `<div class="font-bold mb-2 flex items-center ${isUser ? 'justify-end' : 'justify-start'}">
+                ${isUser ? '👤 Você' : '<i class="fas fa-fist-raised mr-1 text-orange-400"></i> TreinarFacil IA'}
+            </div><div class="whitespace-pre-wrap">${text}</div>`;
+            messagesEl.appendChild(div);
+            messagesEl.scrollTop = messagesEl.scrollHeight;
+        }
+
+        // Função principal IA
+        async function ask() {
+            const question = inputEl.value.trim();
+            if (!question) return;
+            
+            addMessage('', question, true);
+            inputEl.value = '';
+            typingEl.classList.remove('hidden');
+            
+            console.log('🚀 Pergunta:', question);
+            
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${API_KEY}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        model: 'deepseek-chat',
+                        messages: [
+                            { role: 'system', content: `Vc é a Dra. Luiza Ferraz, PhD Fisiologia Exercício FEMININO + Nutrição Esportiva + hormônios.
+
+**FOCO EXCLUSIVO (5 temas):**
+✅1. TREINOS: GLÚTEOS/PERNAS/ABDÔMEN/COSTAS/OMBRO/PEITO/BÍCEPS/TRÍCEPS/FLEXIBILIDADE/HIIT/CARDIO/RESISTÊNCIA/FORÇA/etc...
+✅2. DIETA: Macros calculados, alimentos reais, perda/ganho muscular , emagrecimento, cutting, bulking, etc...
+✅3. NUTRIÇÃO: Proteína/whey/creatina, timing refeições
+✅4. HORMÔNIOS: Estrogênio/testosterona/TSH, ciclo menstrual, TPM, menopausa, etc...
+✅5. ANABOLIZANTES: Ciclos FEMININOS seguros + RISCOS + "consulte médico"
+
+
+
+**NUNCA:** Outros assuntos fora os 5 temas. 
+
+PORTUGUÊS BR direto. Máx 8 itens.`
+    },
+    
+                            { role: 'user', content: question }
+                        ],
+                        max_tokens: 1200,
+                        temperature: 0.7
+                    })
+                });
+                
+                console.log('📡 Status:', response.status);
+                const data = await response.json();
+                console.log('📄 Resposta completa:', data);
+                
+                if (!response.ok) {
+                    throw new Error(`DeepSeek ${response.status}: ${data.error?.message || data.detail || 'Erro desconhecido'}`);
+                }
+                
+                const answer = data.choices[0].message.content.trim();
+                typingEl.classList.add('hidden');
+                addMessage('', answer);
+                statusEl.textContent = '✅ Conectado ';
+                
+            } catch (e) {
+                typingEl.classList.add('hidden');
+                console.error('💥 Erro completo:', e);
+                let errorMsg = `Falha DeepSeek: ${e.message}`;
+                if (e.message.includes('401')) errorMsg += '\n🔑 Key inválida. Gere nova em platform.deepseek.com';
+                if (e.message.includes('429')) errorMsg += '\n⏳ Limite de uso. Aguarde ou adicione créditos';
+                addMessage('Erro', errorMsg + '\nF12→Console para detalhes', false);
+                statusEl.textContent = '❌ Erro API';
+            }
+        }
+
+        // Events
+        inputEl.addEventListener('keypress', e => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                ask();
+            }
+        });
+        inputEl.focus();
+
+        // Teste automático (1s após load)
+        setTimeout(async () => {
+            if (validateKey()) {
+                try {
+                    const testResponse = await fetch(API_URL, {
+                        method: 'POST',
+                        headers: { 
+                            'Authorization': `Bearer ${API_KEY}`, 
+                            'Content-Type': 'application/json' 
+                        },
+                        body: JSON.stringify({ 
+                            model: 'deepseek-chat', 
+                            messages: [{role:'user', content:'teste conexão'}], 
+                            max_tokens: 5 
+                        })
+                    });
+                    
+                    const testData = await testResponse.json();
+                    console.log('🧪 Teste DeepSeek:', testResponse.status, testData);
+                    
+                    if (testResponse.ok) {
+                        statusEl.textContent = '✅ ONLINE DeepSeek';
+                    } else {
+                        statusEl.textContent = '❌ Key inválida';
+                        addMessage('Teste', `Erro ${testResponse.status}: ${testData.error?.message || 'Verifique créditos/key'}`, false);
+                    }
+                } catch (e) {
+                    console.error('Teste falhou:', e);
+                    statusEl.textContent = '❌ Sem conexão';
+                }
+            }
+        }, 1200);
+
+        function voltar() {
+            window.location.href = "treino.html";
+        }
+    </script>
+</body>
+</html>
