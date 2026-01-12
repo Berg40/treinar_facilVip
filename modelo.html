@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Treino Fácil - Timer Pro</title>
+    <title>Treino Fácil (VIP)</title>
     <link rel="shortcut icon" href="img/logo_treinoFacil" type="image/png">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
@@ -50,7 +50,7 @@
 <body>
 
 <header> 
-    <h1>🥊TreinoFácil</h1>
+    <h1>🥊TreinoFácil (VIP)</h1>
 </header>
   
 <main class="container">
@@ -92,10 +92,6 @@
             <span class="material-icons-round">calculate</span> Calculadora Fitness 
         </button>
 
-        <button class="btn1"onclick="window.location.href='treino_personalizado.html'" style="background: #fbbf24; color: #000;">
-            <span class="material-icons-round"></span> 🚀Treino Especifico Completo
-        </button>
-
         <button class="btn1" onclick="window.location.href='muaythai.html'" style="background: linear-gradient(135deg, #ef4444, #b91c1c); margin-top: 10px;">
             <span class="material-icons-round">sports_kabaddi</span> Treino Muay Thai Berg
         </button>
@@ -103,6 +99,7 @@
         <button class="btn1" onclick="window.location.href='chat_ia.html'" style="background: linear-gradient(135deg, #ef4444, #b91c1c); margin-top: 10px;">
             <span class="material-icons-round">psychology</span> Chat Dra. Luiza IA
         </button>
+
 
         <!-- Timer Moderno -->
         <div class="card timer-card">
@@ -153,14 +150,47 @@
 <footer>Copyright&copy; Berg Andrade 2025.</footer>
 
 
-
-<script src="script.js"></script>
-
 <script>
-    
+   
+        // 🔄 FORÇA NOVA VERSÃO SEMPRE (anti-cache)
+        window.addEventListener('load', () => {
+            // 1. Detecta nova versão do Service Worker
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('/sw.js').then(registration => {
+                    // Quando SW novo assume controle → RECARREGA
+                    navigator.serviceWorker.addEventListener('controllerchange', () => {
+                        window.location.reload();
+                    });
+                    
+                    // Verifica atualizações a cada 5min
+                    setInterval(() => {
+                        registration.update();
+                    }, 300000); // 5 minutos
+                });
+            }
+            
+            // 2. Cache buster nos assets críticos
+            const links = document.querySelectorAll('link[href*="style.css"], link[href*="manifest.json"]');
+            links.forEach(link => {
+                link.href += '?v=' + Date.now();
+            });
+            
+            // 3. Meta anti-cache
+            const meta = document.createElement('meta');
+            meta.httpEquiv = 'Cache-Control';
+            meta.content = 'no-cache, no-store, must-revalidate';
+            document.head.appendChild(meta);
+        });
+
+        // 🔄 CTRL+F5 automático se detectar cache velho
+        window.addEventListener('pageshow', (event) => {
+            if (event.persisted) {
+                window.location.reload();
+            }
+        });
 
     // =========================================
-    // ⏱️ LÓGICA DO TIMER (Corrigida)
+    // ⏱️ LÓGICA DO TIMER 
     // =========================================
     let tempoTotal = 0;
     let tempoRestante = 0;

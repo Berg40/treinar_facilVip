@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🏋️ Anamnese + Treino COMPLETO</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh; padding: 20px;
+        }
+        .container { 
+            max-width: 1100px; margin: 0 auto; 
+            background: white; border-radius: 25px; 
+            box-shadow: 0 30px 60px rgba(0,0,0,0.2); overflow: hidden;
+        }
+        .header { 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+            color: white; padding: 40px; text-align: center;
+        }
+        .header h1 { font-size: 2.8em; margin-bottom: 15px; }
+        .form-container { padding: 40px; }
+        .form-section { 
+            margin-bottom: 35px; padding: 30px; 
+            border: 2px solid #e1e8ed; border-radius: 20px; 
+            background: #f8fafc;
+        }
+        .section-title { 
+            font-size: 1.7em; color: #1a365d; 
+            margin-bottom: 25px; padding-bottom: 15px; 
+            border-bottom: 4px solid #4299e1; display: flex; align-items: center; gap: 15px;
+        }
+        .form-group { margin-bottom: 25px; }
+        label { display: block; margin-bottom: 10px; font-weight: 600; color: #2d3748; }
+        input, select, textarea { 
+            width: 100%; padding: 15px 18px; 
+            border: 2px solid #e2e8f0; border-radius: 12px; 
+            font-size: 16px; transition: all 0.3s ease;
+        }
+        input:focus, select:focus, textarea:focus { 
+            outline: none; border-color: #4299e1; 
+            box-shadow: 0 0 0 4px rgba(66, 153, 225, 0.1);
+        }
+        textarea { resize: vertical; min-height: 100px; }
+        .checkbox-grid { 
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
+            gap: 15px; margin-top: 10px;
+        }
+        .checkbox-item { display: flex; align-items: flex-start; gap: 12px; }
+        input[type="checkbox"] { width: auto; transform: scale(1.3); margin-top: 2px; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .medical-warning { 
+            background: #fff5f5; border: 2px solid #fed7d7; border-radius: 12px; 
+            padding: 20px; margin: 20px 0; color: #c53030; font-weight: 500;
+        }
+        .btn-primary { 
+            background: linear-gradient(135deg, #48bb78, #38a169); 
+            color: white; padding: 22px 60px; border: none; 
+            border-radius: 15px; font-size: 1.4em; font-weight: 600; 
+            cursor: pointer; width: 100%; transition: all 0.3s ease; margin-top: 30px;
+        }
+        .btn-primary:hover:not(:disabled) { 
+            transform: translateY(-3px); box-shadow: 0 20px 40px rgba(72, 187, 120, 0.4); 
+        }
+        .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+        .loading, .error, .success { display: none; padding: 30px; border-radius: 15px; margin-top: 25px; }
+        .loading { background: #ebf8ff; border-left: 5px solid #4299e1; }
+        .error { background: #fed7d7; border-left: 5px solid #e53e3e; }
+        .success { background: #c6f6d5; border-left: 5px solid #38a169; }
+        .treino-container { 
+            background: #f8f9fa; border-radius: 15px; padding: 25px; 
+            border-left: 5px solid #38a169; margin-top: 20px; white-space: pre-wrap; 
+            font-family: 'Courier New', monospace; line-height: 1.7; max-height: 700px; 
+            overflow-y: auto; font-size: 14px;
+        }
+        .api-status { 
+            background: #d4edda; border: 2px solid #c3e6cb; border-radius: 12px; 
+            padding: 20px; margin-bottom: 30px; text-align: center; color: #155724;
+        }
+        @media (max-width: 768px) { 
+            .form-row { grid-template-columns: 1fr; }
+            .form-container { padding: 20px; }
+            .header h1 { font-size: 2.2em; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 Anamnese + Treino </h1>
+            <p style="font-size: 1.2em; margin-top: 10px;">Preencha o formulário abaixo para gerar seu treino personalizado</p>
+        </div>
+
+        <div class="form-container">
+            
+
+            <form id="anamneseForm">
+                <!-- 1. DADOS PESSOAIS -->
+                <div class="form-section">
+                    <h2 class="section-title">👤 1. Dados Pessoais</h2>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Nome Completo *</label>
+                            <input type="text" id="nome" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Idade *</label>
+                            <input type="number" id="idade" min="16" max="80" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Sexo *</label>
+                            <select id="sexo" required>
+                                <option value="">Selecione</option>
+                                <option value="Masculino">Masculino</option>
+                                <option value="Feminino">Feminino</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Peso Atual (kg) *</label>
+                            <input type="number" id="peso" step="0.1" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Altura (cm) *</label>
+                            <input type="number" id="altura" required>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. OBJETIVOS -->
+                <div class="form-section">
+                    <h2 class="section-title">🎯 2. Objetivos & Experiência</h2>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Objetivo Principal *</label>
+                            <select id="objetivo" required>
+                                <option value="">Selecione</option>
+                                <option value="Emagrecimento">🔥 Emagrecimento</option>
+                                <option value="Hipertrofia">💪 Hipertrofia muscular</option>
+                                <option value="Força">⚡ Força máxima</option>
+                                <option value="Resistência">🏃 Resistência cardiovascular</option>
+                                <option value="Saúde">❤️ Saúde geral</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Dias disponíveis/semana *</label>
+                            <select id="diasSemana" required>
+                                <option value="">Selecione</option>
+                                <option value="2">2 dias</option>
+                                <option value="3">3 dias</option>
+                                <option value="4">4 dias</option>
+                                <option value="5">5 dias</option>
+                                <option value="6">6 dias</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Nível de experiência *</label>
+                        <select id="experiencia" required>
+                            <option value="">Selecione</option>
+                            <option value="Iniciante">🥚 Iniciante (0-6 meses)</option>
+                            <option value="Intermediário">🥚🥚 Intermediário (6m-2 anos)</option>
+                            <option value="Avançado">🥚🥚🥚 Avançado (+2 anos)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- 3. SAÚDE ULTRADETALHADA -->
+                <div class="form-section">
+                    <h2 class="section-title">🏥 3. Saúde & Histórico Médico Completo</h2>
+                    <div class="medical-warning">
+                        <strong>⚠️ ATENÇÃO MÉDICA:</strong> Marque TODAS as condições e descreva detalhes
+                    </div>
+
+                    <div class="form-group">
+                        <label>🏥 Condições Crônicas:</label>
+                        <div class="checkbox-grid">
+                            <div class="checkbox-item"><input type="checkbox" id="hipertensao"><label for="hipertensao">Hipertensão</label></div>
+                            <div class="checkbox-item"><input type="checkbox" id="hipotensao"><label for="hipotensao">Hipotensão</label></div>
+                            <div class="checkbox-item"><input type="checkbox" id="diabetes"><label for="diabetes">Diabetes</label></div>
+                            <div class="checkbox-item"><input type="checkbox" id="tireoide"><label for="tireoide">Tireoide</label></div>
+                            <div class="checkbox-item"><input type="checkbox" id="cardiaco"><label for="cardiaco">Cardíacas</label></div>
+                            <div class="checkbox-item"><input type="checkbox" id="arritmia"><label for="arritmia">Arritmia</label></div>
+                            <div class="checkbox-item"><input type="checkbox" id="colesterol"><label for="colesterol">Colesterol alto</label></div>
+                            <div class="checkbox-item"><input type="checkbox" id="renal"><label for="renal">Renais</label></div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>🌬️ Respiratório:</label>
+                        <div class="checkbox-grid">
+                            <div class="checkbox-item"><input type="checkbox" id="asma"><label for="asma">Asma</label></div>
+                            <div class="checkbox-item"><input type="checkbox" id="bronquite"><label for="bronquite">Bronquite</label></div>
+                            <div class="checkbox-item"><input type="checkbox" id="apneia"><label for="apneia">Apneia sono</label></div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>🦴 Ortopédico:</label>
+                        <div class="checkbox-grid">
+                            <div class="checkbox-item"><input type="checkbox" id="lombar"><label for="lombar">Dor lombar</label></div>
+                            <div class="checkbox-item"><input type="checkbox" id="joelho"><label for="joelho">Joelho</label></div>
+                            <div class="checkbox-item"><input type="checkbox" id="ombro"><label for="ombro">Ombro</label></div>
+                            <div class="checkbox-item"><input type="checkbox" id="punho"><label for="punho">Punho/cotovelo</label></div>
+                            <div class="checkbox-item"><input type="checkbox" id="artrose"><label for="artrose">Artrose</label></div>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>💊 Medicamentos diários:</label>
+                            <textarea id="medicamentos" placeholder="Ex: Losartana 50mg, Metformina..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>🔪 Cirurgias anteriores:</label>
+                            <textarea id="cirurgias" placeholder="Ex: Hérnia 2018, joelho 2022..."></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>🚑 Lesões atuais:</label>
+                            <textarea id="lesoes" placeholder="Onde? Quando? Gravidade?"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>🚨 Alergias:</label>
+                            <textarea id="alergias" placeholder="Medicamentos, suplementos, alimentos..."></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>📋 Avaliação médica?</label>
+                            <select id="avaliacaoMedica">
+                                <option value="">Selecione</option>
+                                <option value="Sim">✅ Sim, liberado</option>
+                                <option value="SimRestrito">⚠️ Sim, restrito</option>
+                                <option value="Nao">❌ Não fiz</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>👨‍⚕️ Acompanhamento atual?</label>
+                            <select id="acompanhamentoMedico">
+                                <option value="">Selecione</option>
+                                <option value="Sim">✅ Sim</option>
+                                <option value="Nao">❌ Não</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. INFRAESTRUTURA -->
+                <div class="form-section">
+                    <h2 class="section-title">🏋️ 4. Infraestrutura & Preferências</h2>
+                    <div class="form-group">
+                        <label>Onde treina? *</label>
+                        <select id="local" required>
+                            <option value="">Selecione</option>
+                            <option value="Academia completa">🏋️ Academia completa</option>
+                            <option value="Academia casa">🏠 Academia em casa</option>
+                            <option value="Ar livre">🌳 Ar livre</option>
+                            <option value="Corpo livre">💪 Apenas corpo</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Observações importantes:</label>
+                        <textarea id="observacoes" placeholder="Equipamentos, horários, exercícios que gosta/não gosta..."></textarea>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-primary" id="btnGerar">
+                    🎯 Gerar Meu Treino Personalizado
+                </button>
+            </form>
+
+            <!-- Loading -->
+            <div class="loading" id="loading">
+                <h2>🤖 Analisando seus dados...</h2>
+                <div style="font-size: 5em; margin: 30px 0;">⚡</div>
+                <p>Seu treino personalizado será gerado em 5-15 segundos</p>
+            </div>
+
+            <!-- Error -->
+            <div class="error" id="error"></div>
+
+            <!-- Success -->
+            <div class="success" id="success" style="display: none;">
+                <h2>✅ <strong>Seu treino está pronto!</strong></h2>
+                <div id="treinoContainer" class="treino-container"></div>
+                <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-top: 25px;">
+                    
+                    <button onclick="copiarTreino()" class="btn-primary" style="flex: 1; min-width: 200px; padding: 15px; background: linear-gradient(135deg, #ed8936, #dd6b20);">
+                        📋 Copiar para WhatsApp
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ====================🔥 COLE SUA CHAVE AQUI (LINHA 257) ====================
+        const DEEPSEEK_API_KEY = 'sk-f4e543d49b3e40c89bcdd6200f0cbada';
+        // Exemplo: 'sk-proj-abc123def456ghi789jkl012mno345pqr678stu901vwx234yz5'
+        // ============================================================================
+
+        document.getElementById('anamneseForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // Verificar chave
+            if (DEEPSEEK_API_KEY === 'SUA_CHAVE_DEEPSEEK_AQUI') {
+                alert('❌ CONFIGURE SUA CHAVE!\n\n1. platform.deepseek.com → API Keys\n2. Create New API Key\n3. Cole na linha 257 deste código');
+                return;
+            }
+
+            // UI Loading
+            const btn = document.getElementById('btnGerar');
+            const loading = document.getElementById('loading');
+            const error = document.getElementById('error');
+            const success = document.getElementById('success');
+            
+            loading.style.display = 'block';
+            error.style.display = 'none';
+            success.style.display = 'none';
+            btn.disabled = true;
+            btn.textContent = '⏳ Gerando...';
+
+            try {
+                const dados = coletarDadosFormulario();
+                const treino = await chamarDeepSeekAPI(dados);
+                
+                document.getElementById('treinoContainer').textContent = treino;
+                success.style.display = 'block';
+                
+            } catch (err) {
+                error.innerHTML = `
+                    <h3>❌ Erro ao gerar treino</h3>
+                    <p><strong>${err.message}</strong></p>
+                    <p><em>Verifique: chave API válida? Saldo disponível? Internet ok?</em></p>
+                `;
+                error.style.display = 'block';
+            } finally {
+                loading.style.display = 'none';
+                btn.disabled = false;
+                btn.textContent = '🎯 Gerar Meu Treino Personalizado com DeepSeek AI';
+            }
+        });
+
+        function coletarDadosFormulario() {
+            const condicoes = [];
+            const checkboxes = [
+                'hipertensao', 'hipotensao', 'diabetes', 'tireoide', 'cardiaco', 'arritmia',
+                'colesterol', 'renal', 'asma', 'bronquite', 'apneia', 'lombar', 'joelho',
+                'ombro', 'punho', 'artrose'
+            ];
+            
+            checkboxes.forEach(id => {
+                const checkbox = document.getElementById(id);
+                if (checkbox && checkbox.checked) {
+                    condicoes.push(checkbox.labels[0].textContent.trim());
+                }
+            });
+
+            return {
+                nome: document.getElementById('nome').value,
+                idade: document.getElementById('idade').value,
+                sexo: document.getElementById('sexo').value,
+                peso: parseFloat(document.getElementById('peso').value),
+                altura: parseFloat(document.getElementById('altura').value),
+                objetivo: document.getElementById('objetivo').value,
+                dias: document.getElementById('diasSemana').value,
+                experiencia: document.getElementById('experiencia').value,
+                medicamentos: document.getElementById('medicamentos').value || 'Nenhum',
+                cirurgias: document.getElementById('cirurgias').value || 'Nenhuma',
+                lesoes: document.getElementById('lesoes').value || 'Nenhuma',
+                alergias: document.getElementById('alergias').value || 'Nenhuma',
+                avaliacaoMedica: document.getElementById('avaliacaoMedica').value || 'Não informada',
+                condicoes: condicoes.length ? condicoes.join(', ') : 'Nenhuma condição',
+                local: document.getElementById('local').value,
+                observacoes: document.getElementById('observacoes').value || 'Nenhuma'
+            };
+        }
+
+        async function chamarDeepSeekAPI(dados) {
+            const imc = ((dados.peso / ((dados.altura/100) ** 2)).toFixed(1));
+            
+            const prompt = `Você é um personal trainer MÉDICO especialista. Crie treino 100% SEGURO para:
+
+👤 ${dados.nome}, ${dados.idade} anos, ${dados.sexo}
+📏 ${dados.peso}kg, ${dados.altura}cm, IMC: ${imc}
+🎯 ${dados.objetivo} | ${dados.dias} DIAS/SEMANA | ${dados.experiencia}
+🏥 ${dados.condicoes}
+💊 ${dados.medicamentos}
+🔪 ${dados.cirurgias}
+🚑 ${dados.lesoes}
+📍 ${dados.local}
+
+FORMATO EXATO E LIMPO:
+
+TITULO: Treino ${dados.objetivo} - ${dados.nome}
+
+⚠️ PRECAUÇÕES MÉDICAS:
+• Adaptações para ${dados.condicoes}
+
+DIA 1: [FOCO PRINCIPAL]
+⏰ DURAÇÃO: 45-60min
+🔥 AQUECIMENTO: [seguro]
+✅ TREINO PRINCIPAL:
+1. Exercício - 3x12-15 - 60s descanso
+
+DIA 2: [FOCO]
+...
+
+📈 PROGRESSÃO SEMANAL:
+• Semana 1-2: ...
+• Semana 3-4: ...
+
+⚠️ ORIENTAÇÕES FINAIS:
+• Monitoramento RPE 4-6/10
+• NUNCA prender respiração
+
+Adapte para ${dados.local} e ${dados.condicoes}.`;
+
+            const response = await fetch('https://api.deepseek.com/v1/chat/completions', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${DEEPSEEK_API_KEY}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    model: 'deepseek-chat',
+                    messages: [{ role: 'user', content: prompt }],
+                    max_tokens: 4500,
+                    temperature: 0.3
+                })
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(errorData.error?.message || `HTTP ${response.status}`);
+            }
+
+            const data = await response.json();
+            return data.choices[0].message.content.trim();
+        }
+
+        // PDF PERFEITO - SEM ERROS DE CARACTERES
+        function gerarPDFTreino() {
+            const { jsPDF } = window.jspdf;
+            const treinoText = document.getElementById('treinoContainer').textContent;
+            
+            // LIMPEZA PERFEITA
+            const textoLimpo = treinoText
+                .replace(/Ø=Üd|Ø<ß¯|& þ|Ø=Ý%|Ø=ÜÈ|#[ðđ]|ß|þ/gi, '')
+                .replace(/\s+/g, ' ')
+                .replace(/ {2,}/g, ' ')
+                .trim();
+
+            const doc = new jsPDF('p', 'mm', 'a4');
+            let y = 25;
+
+            // CABEÇALHO
+            doc.setFontSize(22);
+            doc.setFont('helvetica', 'bold');
+            doc.text('TREINO PERSONALIZADO', 20, y); y += 12;
+            
+            doc.setFontSize(14);
+            doc.setFont('helvetica', 'normal');
+            doc.text('DeepSeek AI', 20, y); y += 8;
+            doc.text(`Data: ${new Date().toLocaleDateString('pt-BR')}`, 20, y); y += 12;
+
+            // DADOS ALUNO
+            doc.setFontSize(16);
+            doc.setFont('helvetica', 'bold');
+            doc.text('DADOS DO ALUNO:', 20, y); y += 12;
+            
+            doc.setFontSize(12);
+            doc.setFont('helvetica', 'normal');
+            doc.text(`Nome: ${document.getElementById('nome').value}`, 25, y); y += 7;
+            doc.text(`Idade: ${document.getElementById('idade').value} anos`, 25, y); y += 7;
+            doc.text(`Objetivo: ${document.getElementById('objetivo').value}`, 25, y); y += 7;
+            doc.text(`Dias: ${document.getElementById('diasSemana').value}/semana`, 25, y); y += 7;
+            doc.text(`Local: ${document.getElementById('local').value}`, 25, y); y += 15;
+
+            doc.line(20, y, 190, y); y += 12;
+
+            // TREINO - QUEBRA INTELIGENTE
+            doc.setFontSize(12);
+            doc.setFont('helvetica', 'normal');
+            
+            const linhas = doc.splitTextToSize(textoLimpo, 170);
+            const pageHeight = 270;
+            
+            for (let i = 0; i < linhas.length; i++) {
+                if (y > pageHeight) {
+                    doc.addPage();
+                    y = 20;
+                }
+                doc.text(linhas[i], 20, y);
+                y += 6;
+            }
+
+            // SALVAR
+            const nomeAluno = document.getElementById('nome').value.replace(/[^a-zA-Z0-9]/g, '_');
+            doc.save(`Treino_${nomeAluno}_${new Date().toISOString().slice(0,10)}.pdf`);
+        }
+
+        function copiarTreino() {
+            const treinoLimpo = document.getElementById('treinoContainer').textContent
+                .replace(/Ø=Üd|Ø<ß¯|& þ|Ø=Ý%|Ø=ÜÈ|#[ðđ]|ß|þ/gi, '')
+                .trim();
+            
+            navigator.clipboard.writeText(treinoLimpo).then(() => {
+                alert('✅ Treino copiado para WhatsApp/Email!');
+            }).catch(() => {
+                prompt('Copie manualmente:', treinoLimpo);
+            });
+        }
+    </script>
+</body>
+</html>
