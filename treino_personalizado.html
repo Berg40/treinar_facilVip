@@ -66,6 +66,27 @@
             transform: translateY(-3px); box-shadow: 0 20px 40px rgba(72, 187, 120, 0.4); 
         }
         .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+        .btn-pdf { 
+            background: linear-gradient(135deg, #f6ad55, #ed8936); 
+            color: white; padding: 18px 30px; border: none; 
+            border-radius: 15px; font-size: 1.2em; font-weight: 600; 
+            cursor: pointer; transition: all 0.3s ease; 
+            display: flex; align-items: center; gap: 12px; justify-content: center;
+        }
+        .btn-pdf:hover:not(:disabled) { 
+            transform: translateY(-3px); box-shadow: 0 15px 35px rgba(246, 173, 85, 0.4); 
+        }
+        .btn-pdf:disabled { opacity: 0.6; cursor: not-allowed; }
+        .btn-copy { 
+            background: linear-gradient(135deg, #4299e1, #3182ce); 
+            color: white; padding: 18px 30px; border: none; 
+            border-radius: 15px; font-size: 1.2em; font-weight: 600; 
+            cursor: pointer; transition: all 0.3s ease; 
+            display: flex; align-items: center; gap: 12px; justify-content: center;
+        }
+        .btn-copy:hover { 
+            transform: translateY(-3px); box-shadow: 0 15px 35px rgba(66, 153, 225, 0.4); 
+        }
         .loading, .error, .success { display: none; padding: 30px; border-radius: 15px; margin-top: 25px; }
         .loading { background: #ebf8ff; border-left: 5px solid #4299e1; }
         .error { background: #fed7d7; border-left: 5px solid #e53e3e; }
@@ -73,30 +94,30 @@
         .treino-container { 
             background: #f8f9fa; border-radius: 15px; padding: 25px; 
             border-left: 5px solid #38a169; margin-top: 20px; white-space: pre-wrap; 
-            font-family: 'Courier New', monospace; line-height: 1.7; max-height: 700px; 
-            overflow-y: auto; font-size: 14px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.7; max-height: 700px; 
+            overflow-y: auto; font-size: 15px;
         }
-        .api-status { 
-            background: #d4edda; border: 2px solid #c3e6cb; border-radius: 12px; 
-            padding: 20px; margin-bottom: 30px; text-align: center; color: #155724;
+        .btn-group { 
+            display: flex; gap: 15px; flex-wrap: wrap; margin-top: 25px; 
+            justify-content: center;
         }
         @media (max-width: 768px) { 
             .form-row { grid-template-columns: 1fr; }
             .form-container { padding: 20px; }
             .header h1 { font-size: 2.2em; }
+            .btn-group { flex-direction: column; }
+            .btn-pdf, .btn-copy { width: 100%; }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>🚀 Anamnese + Treino </h1>
-            <p style="font-size: 1.2em; margin-top: 10px;">Preencha o formulário abaixo para gerar seu treino personalizado</p>
+            <h1>🚀 Anamnese + Treino Personalizado</h1>
+            <p style="font-size: 1.2em; margin-top: 10px;">Preencha todos os campos para gerar seu treino 100% personalizado e seguro</p>
         </div>
 
         <div class="form-container">
-            
-
             <form id="anamneseForm">
                 <!-- 1. DADOS PESSOAIS -->
                 <div class="form-section">
@@ -139,15 +160,15 @@
                             <label>Objetivo Principal *</label>
                             <select id="objetivo" required>
                                 <option value="">Selecione</option>
-                                <option value="Emagrecimento">🔥 Emagrecimento</option>
-                                <option value="Hipertrofia">💪 Hipertrofia muscular</option>
-                                <option value="Força">⚡ Força máxima</option>
-                                <option value="Resistência">🏃 Resistência cardiovascular</option>
-                                <option value="Saúde">❤️ Saúde geral</option>
+                                <option value="Emagrecimento">Emagrecimento</option>
+                                <option value="Hipertrofia">Hipertrofia muscular</option>
+                                <option value="Forca">Forca maxima</option>
+                                <option value="Resistencia">Resistencia cardiovascular</option>
+                                <option value="Saude">Saude geral</option>
                             </select>
                         </div>
                         <div class="form-group">
-                            <label>Dias disponíveis/semana *</label>
+                            <label>Dias disponiveis/semana *</label>
                             <select id="diasSemana" required>
                                 <option value="">Selecione</option>
                                 <option value="2">2 dias</option>
@@ -159,31 +180,31 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label>Nível de experiência *</label>
+                        <label>Nivel de experiencia *</label>
                         <select id="experiencia" required>
                             <option value="">Selecione</option>
-                            <option value="Iniciante">🥚 Iniciante (0-6 meses)</option>
-                            <option value="Intermediário">🥚🥚 Intermediário (6m-2 anos)</option>
-                            <option value="Avançado">🥚🥚🥚 Avançado (+2 anos)</option>
+                            <option value="Iniciante">Iniciante (0-6 meses)</option>
+                            <option value="Intermediario">Intermediario (6m-2 anos)</option>
+                            <option value="Avancado">Avancado (+2 anos)</option>
                         </select>
                     </div>
                 </div>
 
-                <!-- 3. SAÚDE ULTRADETALHADA -->
+                <!-- 3. SAÚDE -->
                 <div class="form-section">
-                    <h2 class="section-title">🏥 3. Saúde & Histórico Médico Completo</h2>
+                    <h2 class="section-title">🏥 3. Saude & Historico Medico</h2>
                     <div class="medical-warning">
-                        <strong>⚠️ ATENÇÃO MÉDICA:</strong> Marque TODAS as condições e descreva detalhes
+                        <strong>⚠️ ATENÇÃO MÉDICA:</strong> Marque TODAS as condições e descreva detalhes importantes
                     </div>
 
                     <div class="form-group">
-                        <label>🏥 Condições Crônicas:</label>
+                        <label>Condicoes Cronicas:</label>
                         <div class="checkbox-grid">
-                            <div class="checkbox-item"><input type="checkbox" id="hipertensao"><label for="hipertensao">Hipertensão</label></div>
-                            <div class="checkbox-item"><input type="checkbox" id="hipotensao"><label for="hipotensao">Hipotensão</label></div>
+                            <div class="checkbox-item"><input type="checkbox" id="hipertensao"><label for="hipertensao">Hipertensao</label></div>
+                            <div class="checkbox-item"><input type="checkbox" id="hipotensao"><label for="hipotensao">Hipotensao</label></div>
                             <div class="checkbox-item"><input type="checkbox" id="diabetes"><label for="diabetes">Diabetes</label></div>
                             <div class="checkbox-item"><input type="checkbox" id="tireoide"><label for="tireoide">Tireoide</label></div>
-                            <div class="checkbox-item"><input type="checkbox" id="cardiaco"><label for="cardiaco">Cardíacas</label></div>
+                            <div class="checkbox-item"><input type="checkbox" id="cardiaco"><label for="cardiaco">Cardiacas</label></div>
                             <div class="checkbox-item"><input type="checkbox" id="arritmia"><label for="arritmia">Arritmia</label></div>
                             <div class="checkbox-item"><input type="checkbox" id="colesterol"><label for="colesterol">Colesterol alto</label></div>
                             <div class="checkbox-item"><input type="checkbox" id="renal"><label for="renal">Renais</label></div>
@@ -191,7 +212,7 @@
                     </div>
 
                     <div class="form-group">
-                        <label>🌬️ Respiratório:</label>
+                        <label>Respiratorio:</label>
                         <div class="checkbox-grid">
                             <div class="checkbox-item"><input type="checkbox" id="asma"><label for="asma">Asma</label></div>
                             <div class="checkbox-item"><input type="checkbox" id="bronquite"><label for="bronquite">Bronquite</label></div>
@@ -200,75 +221,55 @@
                     </div>
 
                     <div class="form-group">
-                        <label>🦴 Ortopédico:</label>
+                        <label>Ortopedico:</label>
                         <div class="checkbox-grid">
                             <div class="checkbox-item"><input type="checkbox" id="lombar"><label for="lombar">Dor lombar</label></div>
                             <div class="checkbox-item"><input type="checkbox" id="joelho"><label for="joelho">Joelho</label></div>
                             <div class="checkbox-item"><input type="checkbox" id="ombro"><label for="ombro">Ombro</label></div>
-                            <div class="checkbox-item"><input type="checkbox" id="punho"><label for="punho">Punho/cotovelo</label></div>
+                            <div class="checkbox-item"><input type="checkbox" id="punho"><label for="punho">Punho/cotavelo</label></div>
                             <div class="checkbox-item"><input type="checkbox" id="artrose"><label for="artrose">Artrose</label></div>
                         </div>
                     </div>
 
                     <div class="form-row">
                         <div class="form-group">
-                            <label>💊 Medicamentos diários:</label>
+                            <label>Medicamentos diarios:</label>
                             <textarea id="medicamentos" placeholder="Ex: Losartana 50mg, Metformina..."></textarea>
                         </div>
                         <div class="form-group">
-                            <label>🔪 Cirurgias anteriores:</label>
-                            <textarea id="cirurgias" placeholder="Ex: Hérnia 2018, joelho 2022..."></textarea>
+                            <label>Cirurgias anteriores:</label>
+                            <textarea id="cirurgias" placeholder="Ex: Hernia 2018, joelho 2022..."></textarea>
                         </div>
                     </div>
 
                     <div class="form-row">
                         <div class="form-group">
-                            <label>🚑 Lesões atuais:</label>
+                            <label>Lesoes atuais:</label>
                             <textarea id="lesoes" placeholder="Onde? Quando? Gravidade?"></textarea>
                         </div>
                         <div class="form-group">
-                            <label>🚨 Alergias:</label>
+                            <label>Alergias:</label>
                             <textarea id="alergias" placeholder="Medicamentos, suplementos, alimentos..."></textarea>
-                        </div>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>📋 Avaliação médica?</label>
-                            <select id="avaliacaoMedica">
-                                <option value="">Selecione</option>
-                                <option value="Sim">✅ Sim, liberado</option>
-                                <option value="SimRestrito">⚠️ Sim, restrito</option>
-                                <option value="Nao">❌ Não fiz</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>👨‍⚕️ Acompanhamento atual?</label>
-                            <select id="acompanhamentoMedico">
-                                <option value="">Selecione</option>
-                                <option value="Sim">✅ Sim</option>
-                                <option value="Nao">❌ Não</option>
-                            </select>
                         </div>
                     </div>
                 </div>
 
                 <!-- 4. INFRAESTRUTURA -->
                 <div class="form-section">
-                    <h2 class="section-title">🏋️ 4. Infraestrutura & Preferências</h2>
+                    <h2 class="section-title">🏋️ 4. Infraestrutura & Preferencias</h2>
                     <div class="form-group">
                         <label>Onde treina? *</label>
                         <select id="local" required>
                             <option value="">Selecione</option>
-                            <option value="Academia completa">🏋️ Academia completa</option>
-                            <option value="Academia casa">🏠 Academia em casa</option>
-                            <option value="Ar livre">🌳 Ar livre</option>
-                            <option value="Corpo livre">💪 Apenas corpo</option>
+                            <option value="Academia completa">Academia completa</option>
+                            <option value="Academia casa">Academia em casa</option>
+                            <option value="Ar livre">Ar livre</option>
+                            <option value="Corpo livre">Apenas corpo</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label>Observações importantes:</label>
-                        <textarea id="observacoes" placeholder="Equipamentos, horários, exercícios que gosta/não gosta..."></textarea>
+                        <label>Observacoes importantes:</label>
+                        <textarea id="observacoes" placeholder="Equipamentos disponiveis, horarios, exercicios que gosta/nao gosta..."></textarea>
                     </div>
                 </div>
 
@@ -279,9 +280,9 @@
 
             <!-- Loading -->
             <div class="loading" id="loading">
-                <h2>🤖 Analisando seus dados...</h2>
+                <h2>🤖 Gerando seu treino personalizado...</h2>
                 <div style="font-size: 5em; margin: 30px 0;">⚡</div>
-                <p>Seu treino personalizado será gerado em 5-15 segundos</p>
+                <p>Analisando dados medicos + criando treino seguro (5-15 segundos)</p>
             </div>
 
             <!-- Error -->
@@ -291,10 +292,15 @@
             <div class="success" id="success" style="display: none;">
                 <h2>✅ <strong>Seu treino está pronto!</strong></h2>
                 <div id="treinoContainer" class="treino-container"></div>
-                <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-top: 25px;">
-                    
-                    <button onclick="copiarTreino()" class="btn-primary" style="flex: 1; min-width: 200px; padding: 15px; background: linear-gradient(135deg, #ed8936, #dd6b20);">
-                        📋 Copiar para WhatsApp
+                
+                <div class="btn-group">
+                    <button onclick="gerarPDFTreino()" class="btn-pdf" id="btnPDF">
+                        <span style="font-size: 1.4em;">📄</span>
+                        Baixar PDF Profissional
+                    </button>
+                    <button onclick="copiarTreino()" class="btn-copy">
+                        <span style="font-size: 1.4em;">📋</span>
+                        Copiar WhatsApp
                     </button>
                 </div>
             </div>
@@ -302,21 +308,18 @@
     </div>
 
     <script>
-        // ====================🔥 COLE SUA CHAVE AQUI (LINHA 257) ====================
+        // ====================🔥 CONFIGURE SUA CHAVE DEEPSEEK API ====================
         const DEEPSEEK_API_KEY = 'sk-f4e543d49b3e40c89bcdd6200f0cbada';
-        // Exemplo: 'sk-proj-abc123def456ghi789jkl012mno345pqr678stu901vwx234yz5'
         // ============================================================================
 
         document.getElementById('anamneseForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
-            // Verificar chave
-            if (DEEPSEEK_API_KEY === 'SUA_CHAVE_DEEPSEEK_AQUI') {
-                alert('❌ CONFIGURE SUA CHAVE!\n\n1. platform.deepseek.com → API Keys\n2. Create New API Key\n3. Cole na linha 257 deste código');
+            if (!DEEPSEEK_API_KEY || DEEPSEEK_API_KEY === 'SUA_CHAVE_DEEPSEEK_AQUI') {
+                alert('❌ CONFIGURE SUA CHAVE API!\n\n1. Acesse: platform.deepseek.com → API Keys\n2. Crie uma nova chave\n3. Cole na linha onde está DEEPSEEK_API_KEY');
                 return;
             }
 
-            // UI Loading
             const btn = document.getElementById('btnGerar');
             const loading = document.getElementById('loading');
             const error = document.getElementById('error');
@@ -334,18 +337,19 @@
                 
                 document.getElementById('treinoContainer').textContent = treino;
                 success.style.display = 'block';
+                document.getElementById('btnPDF').disabled = false;
                 
             } catch (err) {
                 error.innerHTML = `
                     <h3>❌ Erro ao gerar treino</h3>
                     <p><strong>${err.message}</strong></p>
-                    <p><em>Verifique: chave API válida? Saldo disponível? Internet ok?</em></p>
+                    <p><em>• Chave API inválida ou sem saldo<br>• Sem conexão com internet<br>• Campos obrigatórios não preenchidos</em></p>
                 `;
                 error.style.display = 'block';
             } finally {
                 loading.style.display = 'none';
                 btn.disabled = false;
-                btn.textContent = '🎯 Gerar Meu Treino Personalizado com DeepSeek AI';
+                btn.textContent = '🎯 Gerar Meu Treino Personalizado';
             }
         });
 
@@ -377,8 +381,7 @@
                 cirurgias: document.getElementById('cirurgias').value || 'Nenhuma',
                 lesoes: document.getElementById('lesoes').value || 'Nenhuma',
                 alergias: document.getElementById('alergias').value || 'Nenhuma',
-                avaliacaoMedica: document.getElementById('avaliacaoMedica').value || 'Não informada',
-                condicoes: condicoes.length ? condicoes.join(', ') : 'Nenhuma condição',
+                condicoes: condicoes.length ? condicoes.join(', ') : 'Nenhuma condicao',
                 local: document.getElementById('local').value,
                 observacoes: document.getElementById('observacoes').value || 'Nenhuma'
             };
@@ -387,42 +390,42 @@
         async function chamarDeepSeekAPI(dados) {
             const imc = ((dados.peso / ((dados.altura/100) ** 2)).toFixed(1));
             
-            const prompt = `Você é um personal trainer MÉDICO especialista. Crie treino 100% SEGURO para:
+            const prompt = `Voce e um personal trainer MEDICO especialista com 20+ anos de experiencia. Crie um treino 100% SEGURO para:
 
-👤 ${dados.nome}, ${dados.idade} anos, ${dados.sexo}
-📏 ${dados.peso}kg, ${dados.altura}cm, IMC: ${imc}
-🎯 ${dados.objetivo} | ${dados.dias} DIAS/SEMANA | ${dados.experiencia}
-🏥 ${dados.condicoes}
-💊 ${dados.medicamentos}
-🔪 ${dados.cirurgias}
-🚑 ${dados.lesoes}
-📍 ${dados.local}
+NOME: ${dados.nome}, ${dados.idade} anos, ${dados.sexo}
+MEDIDAS: ${dados.peso}kg, ${dados.altura}cm (IMC: ${imc})
+OBJETIVO: ${dados.objetivo} | ${dados.dias} DIAS/SEMANA | ${dados.experiencia}
+CONDICOES: ${dados.condicoes}
+MEDICAMENTOS: ${dados.medicamentos}
+CIRURGIAS: ${dados.cirurgias}
+LESOES: ${dados.lesoes}
+LOCAL: ${dados.local}
+OBS: ${dados.observacoes}
 
-FORMATO EXATO E LIMPO:
+FORMATO EXATO (APENAS TEXTO ASCII, SEM EMOJIS, SEM CARACTERES ESPECIAIS, PRONTO PARA PDF/WHATSAPP FORMATADO DE FORMA SIMPLES):
 
 TITULO: Treino ${dados.objetivo} - ${dados.nome}
 
-⚠️ PRECAUÇÕES MÉDICAS:
-• Adaptações para ${dados.condicoes}
+PRECAUCES MEDICAS:
+• Adaptacoes especificas para ${dados.condicoes}
 
-DIA 1: [FOCO PRINCIPAL]
-⏰ DURAÇÃO: 45-60min
-🔥 AQUECIMENTO: [seguro]
-✅ TREINO PRINCIPAL:
-1. Exercício - 3x12-15 - 60s descanso
+DIA 1: FOCO PRINCIPAL
+DURACAO: 45-60min
+AQUECIMENTO: 5min exercicios seguros
+TREINO PRINCIPAL:
+1. Exercicio - 3x12-15 - 60s descanso
 
-DIA 2: [FOCO]
+DIA 2: FOCO SECUNDARIO
 ...
 
-📈 PROGRESSÃO SEMANAL:
-• Semana 1-2: ...
-• Semana 3-4: ...
+PROGRESSAO SEMANAL:
+• Semana 1-2: foco tecnica
+• Semana 3-4: +carga 10%
 
-⚠️ ORIENTAÇÕES FINAIS:
-• Monitoramento RPE 4-6/10
-• NUNCA prender respiração
-
-Adapte para ${dados.local} e ${dados.condicoes}.`;
+ORIENTACOES FINAIS:
+• RPE 5-7/10
+• Respiracao continua
+• Progressao gradual`;
 
             const response = await fetch('https://api.deepseek.com/v1/chat/completions', {
                 method: 'POST',
@@ -440,85 +443,204 @@ Adapte para ${dados.local} e ${dados.condicoes}.`;
 
             if (!response.ok) {
                 const errorData = await response.json().catch(() => ({}));
-                throw new Error(errorData.error?.message || `HTTP ${response.status}`);
+                throw new Error(errorData.error?.message || `Erro HTTP ${response.status}`);
             }
 
             const data = await response.json();
             return data.choices[0].message.content.trim();
         }
 
-        // PDF PERFEITO - SEM ERROS DE CARACTERES
+        // PDF INFALÍVEL - SEM html2canvas
+        // 🔥 PDF COM TÓPICOS ORGANIZADOS EM LINHAS - SUBSTITUA APENAS ESTA FUNÇÃO
         function gerarPDFTreino() {
-            const { jsPDF } = window.jspdf;
-            const treinoText = document.getElementById('treinoContainer').textContent;
-            
-            // LIMPEZA PERFEITA
-            const textoLimpo = treinoText
-                .replace(/Ø=Üd|Ø<ß¯|& þ|Ø=Ý%|Ø=ÜÈ|#[ðđ]|ß|þ/gi, '')
-                .replace(/\s+/g, ' ')
+            try {
+                const { jsPDF } = window.jspdf;
+                if (!jsPDF) {
+                    alert('❌ Recarregue a pagina para carregar jsPDF');
+                    return;
+                }
+
+                const doc = new jsPDF('p', 'mm', 'a4');
+                let y = 20;
+
+                // Limpeza DEFINITIVA de caracteres estranhos
+                const treinoText = document.getElementById('treinoContainer').textContent;
+                const textoLimpo = limparTextoParaPDF(treinoText);
+
+                // CABEÇALHO PROFISSIONAL
+                doc.setFontSize(22);
+                doc.setFont('helvetica', 'bold');
+                doc.setTextColor(30, 60, 130);
+                doc.text('TREINO PERSONALIZADO', 105, y, { align: 'center' });
+                y += 12;
+
+                doc.setFontSize(12);
+                doc.setFont('helvetica', 'normal');
+                doc.setTextColor(100, 100, 100);
+                doc.text('TreinoFácil', 105, y, { align: 'center' });
+                y += 8;
+                doc.text(`Gerado: ${new Date().toLocaleDateString('pt-BR')} ${new Date().toLocaleTimeString('pt-BR')}`, 105, y, { align: 'center' });
+                y += 20;
+
+                // DADOS DO ALUNO - ORGANIZADO
+                doc.setFontSize(16);
+                doc.setFont('helvetica', 'bold');
+                doc.setTextColor(0, 0, 0);
+                doc.text('DADOS DO CLIENTE', 20, y);
+                y += 15;
+
+                doc.setFontSize(11);
+                doc.setFont('helvetica', 'normal');
+                doc.text(`Nome: ${document.getElementById('nome').value}`, 25, y); y += 7;
+                doc.text(`Idade: ${document.getElementById('idade').value} anos`, 25, y); y += 7;
+                doc.text(`Sexo: ${document.getElementById('sexo').value}`, 25, y); y += 7;
+                doc.text(`Objetivo: ${document.getElementById('objetivo').value}`, 25, y); y += 7;
+                doc.text(`Nivel: ${document.getElementById('experiencia').value}`, 25, y); y += 7;
+                doc.text(`Frequencia: ${document.getElementById('diasSemana').value} dias/semana`, 25, y); y += 7;
+                doc.text(`Local: ${document.getElementById('local').value}`, 25, y); 
+                y += 15;
+
+                // LINHA DIVISORIA
+                doc.setLineWidth(0.5);
+                doc.setDrawColor(200, 200, 200);
+                doc.line(20, y, 190, y);
+                y += 15;
+
+                // 🔥 TREINO ORGANIZADO POR SEÇÕES
+                doc.setFontSize(14);
+                doc.setFont('helvetica', 'bold');
+                doc.setTextColor(0, 0, 0);
+                doc.text('PROGRAMA DE TREINO', 20, y);
+                y += 12;
+
+                // DIVIDIR TREINO EM SEÇÕES PRINCIPAIS
+                const secoes = textoLimpo.split(/DIA \d+:/i).filter(s => s.trim());
+                let linhaAtual = 0;
+
+                for (let i = 0; i < secoes.length; i++) {
+                    if (y > 260) {
+                        doc.addPage();
+                        y = 20;
+                    }
+
+                    // TÍTULOS DOS DIAS (DIA 1, DIA 2, etc)
+                    if (i > 0) {
+                        doc.setFontSize(13);
+                        doc.setFont('helvetica', 'bold');
+                        doc.setTextColor(66, 153, 225);
+                        doc.text(`DIA ${i}:`, 20, y);
+                        y += 10;
+                    }
+
+                    // CONTEÚDO DO DIA - PROCESSADO LINHA POR LINHA
+                    const linhasDia = doc.splitTextToSize(secoes[i].trim(), 170);
+                    
+                    doc.setFontSize(11);
+                    doc.setFont('helvetica', 'normal');
+                    doc.setTextColor(0, 0, 0);
+
+                    for (let j = 0; j < linhasDia.length; j++) {
+                        if (y > 270) {
+                            doc.addPage();
+                            y = 20;
+                        }
+                        
+                        // IDENTAR SUBITENS (AQUECIMENTO, TREINO PRINCIPAL, etc)
+                        const linha = linhasDia[j].trim();
+                        if (linha.match(/^(AQUECIMENTO|DURACAO|TREINO PRINCIPAL)/i)) {
+                            doc.setFont('helvetica', 'bold');
+                            doc.setTextColor(40, 90, 150);
+                            doc.text(linha, 25, y); // IDENTADO
+                        } else {
+                            doc.setFont('helvetica', 'normal');
+                            doc.setTextColor(0, 0, 0);
+                            doc.text(linha, 20, y);
+                        }
+                        y += 6;
+                    }
+
+                    y += 5; // ESPAÇO entre dias
+                }
+
+                // SEÇÕES FINAIS (PROGRESSÃO, ORIENTAÇÕES)
+                const secoesFinais = textoLimpo.match(/PROGRESSAO[^P]*$/i) || textoLimpo.match(/ORIENTACOES[^$]*$/i);
+                if (secoesFinais && y < 250) {
+                    y += 8;
+                    doc.setFontSize(12);
+                    doc.setFont('helvetica', 'bold');
+                    doc.setTextColor(0, 100, 0);
+                    doc.text('ORIENTACOES FINAIS', 20, y);
+                    y += 10;
+
+                    const linhasFinais = doc.splitTextToSize(secoesFinais[0], 170);
+                    doc.setFontSize(11);
+                    doc.setFont('helvetica', 'normal');
+                    
+                    for (let k = 0; k < linhasFinais.length; k++) {
+                        if (y > 270) {
+                            doc.addPage();
+                            y = 20;
+                        }
+                        doc.text(linhasFinais[k], 25, y);
+                        y += 6;
+                    }
+                }
+
+                // RODAPÉ PROFISSIONAL
+                doc.setFontSize(9);
+                doc.setFont('helvetica', 'normal');
+                doc.setTextColor(120, 120, 120);
+                y = 285;
+                doc.text('Este programa foi criado por IA especializada em fitness medico', 105, y, { align: 'center' });
+                y += 5;
+                doc.text('Consulte seu medico antes de iniciar qualquer programa de treino', 105, y, { align: 'center' });
+
+                // SALVAR
+                const nomeAluno = document.getElementById('nome').value
+                    .replace(/[^a-zA-Z0-9\s]/g, '')
+                    .substring(0, 20)
+                    .trim() || 'Aluno';
+                
+                doc.save(`Treino_${nomeAluno}_${new Date().toISOString().slice(0,10)}.pdf`);
+                
+            } catch (error) {
+                console.error('Erro PDF:', error);
+                alert('❌ Erro ao gerar PDF. Verifique o console (F12) e tente novamente.');
+            }
+        }
+
+
+        function limparTextoParaPDF(texto) {
+            return texto
+                .replace(/[^\x20-\x7E\n\r]/g, ' ') // Remove nao ASCII
+                .replace(/\s+/g, ' ') // Normaliza espacos
                 .replace(/ {2,}/g, ' ')
                 .trim();
-
-            const doc = new jsPDF('p', 'mm', 'a4');
-            let y = 25;
-
-            // CABEÇALHO
-            doc.setFontSize(22);
-            doc.setFont('helvetica', 'bold');
-            doc.text('TREINO PERSONALIZADO', 20, y); y += 12;
-            
-            doc.setFontSize(14);
-            doc.setFont('helvetica', 'normal');
-            doc.text('DeepSeek AI', 20, y); y += 8;
-            doc.text(`Data: ${new Date().toLocaleDateString('pt-BR')}`, 20, y); y += 12;
-
-            // DADOS ALUNO
-            doc.setFontSize(16);
-            doc.setFont('helvetica', 'bold');
-            doc.text('DADOS DO ALUNO:', 20, y); y += 12;
-            
-            doc.setFontSize(12);
-            doc.setFont('helvetica', 'normal');
-            doc.text(`Nome: ${document.getElementById('nome').value}`, 25, y); y += 7;
-            doc.text(`Idade: ${document.getElementById('idade').value} anos`, 25, y); y += 7;
-            doc.text(`Objetivo: ${document.getElementById('objetivo').value}`, 25, y); y += 7;
-            doc.text(`Dias: ${document.getElementById('diasSemana').value}/semana`, 25, y); y += 7;
-            doc.text(`Local: ${document.getElementById('local').value}`, 25, y); y += 15;
-
-            doc.line(20, y, 190, y); y += 12;
-
-            // TREINO - QUEBRA INTELIGENTE
-            doc.setFontSize(12);
-            doc.setFont('helvetica', 'normal');
-            
-            const linhas = doc.splitTextToSize(textoLimpo, 170);
-            const pageHeight = 270;
-            
-            for (let i = 0; i < linhas.length; i++) {
-                if (y > pageHeight) {
-                    doc.addPage();
-                    y = 20;
-                }
-                doc.text(linhas[i], 20, y);
-                y += 6;
-            }
-
-            // SALVAR
-            const nomeAluno = document.getElementById('nome').value.replace(/[^a-zA-Z0-9]/g, '_');
-            doc.save(`Treino_${nomeAluno}_${new Date().toISOString().slice(0,10)}.pdf`);
         }
 
         function copiarTreino() {
-            const treinoLimpo = document.getElementById('treinoContainer').textContent
-                .replace(/Ø=Üd|Ø<ß¯|& þ|Ø=Ý%|Ø=ÜÈ|#[ðđ]|ß|þ/gi, '')
-                .trim();
+            const treinoLimpo = limparTextoParaPDF(document.getElementById('treinoContainer').textContent);
             
             navigator.clipboard.writeText(treinoLimpo).then(() => {
-                alert('✅ Treino copiado para WhatsApp/Email!');
+                alert('✅ Treino copiado para WhatsApp/Email/Telegram!');
             }).catch(() => {
-                prompt('Copie manualmente:', treinoLimpo);
+                const textarea = document.createElement('textarea');
+                textarea.value = treinoLimpo;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                alert('✅ Copiado! Cole no WhatsApp.');
             });
         }
+
+        // Protecao basica
+        document.addEventListener('contextmenu', e => e.preventDefault());
+        document.addEventListener('keydown', function(e) {
+            if (e.keyCode === 123 || (e.ctrlKey && e.shiftKey && e.keyCode === 73)) {
+                e.preventDefault();
+            }
+        });
     </script>
 </body>
 </html>
